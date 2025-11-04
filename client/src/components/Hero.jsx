@@ -6,12 +6,12 @@ export function Hero() {
   return (
     <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-teal-600 text-white">
       <div className="absolute inset-0 bg-black/20"></div>
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-24">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-40">
         {/* Main Content */}
         <div className="text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
             Find Peace at
-            <span className="block text-blue-100">Serenity Place</span>
+            <span className="block text-blue-100">The Serenity Place</span>
           </h1>
 
           <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto leading-relaxed">

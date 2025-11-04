@@ -8,6 +8,7 @@ import {
   Phone,
   MapPin,
 } from "lucide-react";
+import logo from "/the-serenity-place-logo-2026.svg";
 
 export function Footer() {
   return (
@@ -17,8 +18,12 @@ export function Footer() {
           {/* Brand Section */}
           <div className="md:col-span-2">
             <Link to="/" className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-teal-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">SP</span>
+              <div className="flex items-center justify-center">
+                <img
+                  src={logo}
+                  alt="The Serenity Place Logo"
+                  className="h-12 object-contain" // Tailwind styles
+                />
               </div>
               <div>
                 <span className="text-xl font-bold">Serenity Place</span>

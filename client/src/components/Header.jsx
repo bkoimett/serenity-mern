@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Phone } from "lucide-react";
+import logo from "/the-serenity-place-logo-2026.svg"; // path goes UP one level from components to src
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -20,12 +21,16 @@ export function Header() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-teal-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">SP</span>
+            <div className="flex items-center justify-center">
+              <img
+                src={logo}
+                alt="The Serenity Place Logo"
+                className="h-12 object-contain" // Tailwind styles
+              />
             </div>
             <div>
               <span className="text-xl font-bold text-gray-900">
-                Serenity Place
+                The Serenity Place
               </span>
               <span className="block text-sm text-primary-600">
                 Rehabilitation Center
