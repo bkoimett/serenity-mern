@@ -1,17 +1,21 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
-import LandingPage from "./pages/LandingPage";
-
+// src/App.jsx
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Home } from "./pages/Home";
+import { Blog } from "./pages/Blog";
+import { About } from "./pages/About";
+import { Layout } from "./components/Layout";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>   
-      <LandingPage/>
-    </>
+    <Router>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/about" element={<About />} />
+        </Routes>
+      </Layout>
+    </Router>
   );
 }
 
