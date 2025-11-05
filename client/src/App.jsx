@@ -9,6 +9,7 @@ import { AdminLogin } from "./pages/admin/AdminLogin";
 import { Dashboard } from "./pages/admin/Dashboard";
 import { BlogManager } from "./pages/admin/BlogManager";
 import { AdminLayout } from "./components/admin/AdminLayout";
+import { UserRegistration } from "./pages/admin/UserRegistration";
 import { ProtectedRoute } from "./components/admin/ProtectedRoute";
 import { Layout } from "./components/Layout";
 
@@ -64,6 +65,7 @@ function App() {
           >
             <Route index element={<Dashboard />} />
             <Route path="blog" element={<BlogManager />} />
+            <Route path="users" element={<UserRegistration />} />
             <Route
               path="contacts"
               element={

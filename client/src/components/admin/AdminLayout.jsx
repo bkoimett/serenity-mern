@@ -23,6 +23,7 @@ export function AdminLayout() {
   const navigation = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Blog Posts", href: "/admin/blog", icon: FileText },
+    { name: "User Management", href: "/admin/users", icon: Users },
     { name: "Contacts", href: "/admin/contacts", icon: Users },
     { name: "Messages", href: "/admin/messages", icon: MessageSquare },
     { name: "Settings", href: "/admin/settings", icon: Settings },
