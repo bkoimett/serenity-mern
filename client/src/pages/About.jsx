@@ -1,21 +1,343 @@
 // src/pages/About.jsx
+import {
+  Heart,
+  Eye,
+  Shield,
+  Users,
+  Target,
+  Star,
+  Award,
+  Clock,
+  CheckCircle,
+} from "lucide-react";
+
 export function About() {
+  const values = [
+    {
+      icon: Heart,
+      title: "Compassionate Care",
+      description:
+        "We treat every individual with empathy, dignity, and respect throughout their recovery journey.",
+    },
+    {
+      icon: Eye,
+      title: "Our Vision",
+      description:
+        "To be the leading center for addiction recovery, recognized for our innovative treatments, compassionate care, and unwavering commitment to transforming lives and strengthening communities through sustainable recovery.",
+    },
+    {
+      icon: Shield,
+      title: "Safe Environment",
+      description:
+        "Our facility provides a secure, nurturing space where healing can truly begin and flourish.",
+    },
+    {
+      icon: Users,
+      title: "Community Support",
+      description:
+        "We believe in the power of shared experiences and supportive relationships in recovery.",
+    },
+    {
+      icon: Target,
+      title: "Evidence-Based Treatment",
+      description:
+        "We maintain the highest standards of care through proven treatments and continuous improvement.",
+    },
+  ];
+
+  const team = [
+    {
+      name: "Dr. Sarah Johnson",
+      role: "Medical Director",
+      bio: "Board-certified addiction psychiatrist with 15 years of experience in substance abuse treatment.",
+      image: "/api/placeholder/200/200",
+    },
+    {
+      name: "Michael Chen, LCSW",
+      role: "Clinical Director",
+      bio: "Licensed clinical social worker specializing in trauma-informed care and family therapy.",
+      image: "/api/placeholder/200/200",
+    },
+    {
+      name: "Dr. Emily Rodriguez",
+      role: "Clinical Psychologist",
+      bio: "PhD in Clinical Psychology with expertise in cognitive-behavioral therapy and mindfulness.",
+      image: "/api/placeholder/200/200",
+    },
+    {
+      name: "Robert Williams, RN",
+      role: "Head Nurse",
+      bio: "Registered nurse with 12 years of experience in medical detox and patient care management.",
+      image: "/api/placeholder/200/200",
+    },
+  ];
+
+  const stats = [
+    { number: "95%", label: "Patient Satisfaction Rate" },
+    { number: "2,500+", label: "Lives Transformed" },
+    { number: "15+", label: "Years of Experience" },
+    { number: "24/7", label: "Support Available" },
+  ];
+
+  const treatments = [
+    "Individual Therapy Sessions",
+    "Group Counseling",
+    "Medical Detoxification",
+    "Family Therapy",
+    "Relapse Prevention Planning",
+    "Aftercare Support",
+    "Holistic Wellness Programs",
+    "Trauma-Informed Care",
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            About Serenity Place
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            For over a decade, Serenity Place has been a beacon of hope for
-            individuals and families affected by addiction.
+    <div className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-blue-600 to-teal-600 text-white py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+              About Serenity Place
+            </h1>
+            <p className="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
+              For over 15 years, we've been a beacon of hope for individuals and
+              families affected by addiction, providing compassionate care in a
+              tranquil healing environment.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Mission Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              Our Mission & Vision
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                  Our Mission
+                </h3>
+                <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                  To provide comprehensive, compassionate addiction treatment
+                  that empowers individuals to achieve lasting recovery and
+                  rebuild fulfilling, purposeful lives. We believe that everyone
+                  deserves the opportunity to heal, grow, and thrive.
+                </p>
+                <div className="flex items-center text-blue-600 font-semibold">
+                  <Heart className="w-5 h-5 mr-2" />
+                  Healing Lives, Restoring Hope
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                  Our Vision
+                </h3>
+                <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                  To be the leading center for addiction recovery, recognized
+                  for our innovative treatments, compassionate care, and
+                  unwavering commitment to transforming lives and strengthening
+                  communities through sustainable recovery.
+                </p>
+                <div className="flex items-center text-blue-600 font-semibold">
+                  <Eye className="w-5 h-5 mr-2" />
+                  Empowering Recovery, Inspiring Hope
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-2">
+                  {stat.number}
+                </div>
+                <div className="text-gray-600 font-medium">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Values Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Our Core Values
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              These principles guide everything we do at Serenity Place
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {values.map((value, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 text-center hover:shadow-xl transition-shadow duration-300"
+              >
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <value.icon className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">
+                  {value.title}
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {value.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Treatment Approach */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                Our Treatment Approach
+              </h2>
+              <p className="text-lg text-gray-700 mb-8 leading-relaxed">
+                We address addiction from all angles—physical, psychological,
+                emotional, and spiritual. Our integrated, evidence-based
+                approach ensures comprehensive healing and lasting recovery.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {treatments.map((treatment, index) => (
+                  <div key={index} className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
+                    <span className="text-gray-700">{treatment}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-blue-50 to-teal-50 rounded-2xl p-8">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                Why Choose Serenity Place?
+              </h3>
+              <div className="space-y-4">
+                <div className="flex items-start">
+                  <Award className="w-6 h-6 text-blue-600 mr-3 mt-1 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900">
+                      Licensed & Certified
+                    </h4>
+                    <p className="text-gray-600">
+                      All our staff are fully licensed and certified in
+                      addiction treatment
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start">
+                  <Star className="w-6 h-6 text-blue-600 mr-3 mt-1 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900">
+                      Proven Success
+                    </h4>
+                    <p className="text-gray-600">
+                      Evidence-based treatments with demonstrated success rates
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start">
+                  <Clock className="w-6 h-6 text-blue-600 mr-3 mt-1 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900">
+                      Continuous Support
+                    </h4>
+                    <p className="text-gray-600">
+                      Lifelong aftercare and alumni support programs
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Team Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Meet Our Expert Team
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Our multidisciplinary team includes licensed therapists, medical
+              doctors, and addiction specialists dedicated to your recovery.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {team.map((member, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 text-center hover:shadow-xl transition-shadow duration-300"
+              >
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Users className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-1">
+                  {member.name}
+                </h3>
+                <p className="text-blue-600 font-semibold mb-3">
+                  {member.role}
+                </p>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  {member.bio}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-16 bg-gradient-to-r from-blue-600 to-teal-600 text-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            Ready to Start Your Journey?
+          </h2>
+          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+            Take the first step towards recovery today. Our compassionate team
+            is here to help you 24/7.
           </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="tel:5551234357"
+              className="bg-white text-blue-600 hover:bg-blue-50 font-semibold py-4 px-8 rounded-lg text-lg transition-colors duration-200"
+            >
+              Call Now: (555) 123-HELP
+            </a>
+            <a
+              href="#contact"
+              className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold py-4 px-8 rounded-lg text-lg transition-colors duration-200"
+            >
+              Contact Us
+            </a>
+          </div>
         </div>
-        <div className="text-center py-12">
-          <p className="text-gray-500">About page content coming soon...</p>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }
