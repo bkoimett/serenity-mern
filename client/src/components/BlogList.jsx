@@ -1,73 +1,69 @@
-// src/components/BlogList.jsx
+// client/src/components/BlogList.jsx
 import { useState, useEffect } from "react";
 import { BlogCard } from "./BlogCard";
-import { Search, Filter } from "lucide-react";
+import { Search, Filter, Database, Laptop } from "lucide-react";
 
 export function BlogList() {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [usingLocalData, setUsingLocalData] = useState(false);
 
-  // Mock data - replace with API call
+  const API_BASE = "http://localhost:5000/api";
+
+  // Fetch published blogs from API
   useEffect(() => {
-    const mockBlogs = [
-      {
-        _id: "1",
-        title: "Understanding Addiction Recovery",
-        excerpt:
-          "Learn about the journey of recovery and what to expect in the first 30 days of treatment.",
-        content: "Full content about addiction recovery...",
-        author: { name: "Dr. Sarah Johnson" },
-        createdAt: new Date("2024-01-15"),
-        tags: ["Recovery", "Treatment"],
-        featuredImage: "/api/placeholder/400/250",
-      },
-      {
-        _id: "2",
-        title: "The Role of Family in Recovery",
-        excerpt:
-          "How family support can significantly impact the success of addiction treatment.",
-        content: "Full content about family support...",
-        author: { name: "Dr. Mike Chen" },
-        createdAt: new Date("2024-01-10"),
-        tags: ["Family", "Support"],
-        featuredImage: "/api/placeholder/400/250",
-      },
-      {
-        _id: "3",
-        title: "Mindfulness Practices for Sobriety",
-        excerpt:
-          "Incorporating mindfulness techniques to maintain long-term sobriety and mental wellness.",
-        content: "Full content about mindfulness...",
-        author: { name: "Dr. Emily Rodriguez" },
-        createdAt: new Date("2024-01-05"),
-        tags: ["Mindfulness", "Wellness"],
-        featuredImage: "/api/placeholder/400/250",
-      },
-    ];
-
-    setBlogs(mockBlogs);
-    setLoading(false);
+    fetchBlogs();
   }, []);
+
+  const fetchBlogs = async () => {
+    try {
+      console.log("Fetching published blogs from backend...");
+      const response = await fetch(`${API_BASE}/blog`);
+
+      if (response.ok) {
+        const data = await response.json();
+        setBlogs(data.blogs || []);
+        setUsingLocalData(false);
+        console.log("✅ Loaded published blogs from database");
+      } else {
+        throw new Error("Backend request failed");
+      }
+    } catch (error) {
+      console.log("Backend unavailable, using local data:", error.message);
+      setUsingLocalData(true);
+      // Fallback to local storage
+      const savedBlogs = localStorage.getItem("serenity-blogs");
+      if (savedBlogs) {
+        const allBlogs = JSON.parse(savedBlogs);
+        // Only show published blogs
+        const publishedBlogs = allBlogs.filter(
+          (blog) => blog.status === "published"
+        );
+        setBlogs(publishedBlogs);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredBlogs = blogs.filter(
     (blog) =>
       blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       blog.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      blog.tags.some((tag) =>
-        tag.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      (blog.tags &&
+        blog.tags.some((tag) =>
+          tag.toLowerCase().includes(searchTerm.toLowerCase())
+        ))
   );
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-12">
+      <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="animate-pulse">Loading blogs...</div>
-          </div>
+          <div className="animate-pulse">Loading blogs...</div>
         </div>
-      </div>
+      </section>
     );
   }
 
@@ -84,6 +80,18 @@ export function BlogList() {
             journey.
           </p>
         </div>
+
+        {/* Data Source Indicator */}
+        {usingLocalData && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6 max-w-2xl mx-auto">
+            <div className="flex items-center gap-3 text-yellow-800">
+              <Laptop className="w-5 h-5" />
+              <div className="text-sm">
+                <strong>Local Mode</strong> - Showing locally stored blog posts
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Search Bar */}
         <div className="max-w-2xl mx-auto mb-12">
@@ -114,7 +122,9 @@ export function BlogList() {
               No articles found
             </h3>
             <p className="text-gray-500">
-              Try adjusting your search terms or browse all articles.
+              {searchTerm
+                ? "Try adjusting your search terms"
+                : "No blog posts available yet"}
             </p>
           </div>
         )}

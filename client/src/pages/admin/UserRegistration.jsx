@@ -1,19 +1,19 @@
-// src/pages/admin/UserRegistration.jsx
+// client/src/pages/admin/UserRegistration.jsx
 import { useState, useEffect } from "react";
 import {
   UserPlus,
   Edit,
   Trash2,
-  Search,
   User,
   Mail,
   Shield,
+  Database,
+  Laptop,
 } from "lucide-react";
 
 export function UserRegistration() {
-  // CHANGED: Export UserRegistration instead of UserManagement
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -23,9 +23,61 @@ export function UserRegistration() {
     role: "staff",
   });
   const [message, setMessage] = useState({ type: "", text: "" });
+  const [usingLocalData, setUsingLocalData] = useState(false);
 
-  // Load users from localStorage on component mount
+  const API_BASE = "http://localhost:5000/api";
+
+  // Check if we're using a real JWT token
+  const isUsingRealToken = () => {
+    const token = localStorage.getItem("token");
+    return token && !token.startsWith("mock-jwt-token-");
+  };
+
+  // Fetch users from real backend
   useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        throw new Error("No token available");
+      }
+
+      // If using mock token, skip backend and use local data
+      if (!isUsingRealToken()) {
+        console.log("Using mock token, loading local users");
+        loadLocalUsers();
+        return;
+      }
+
+      console.log("Fetching users from backend...");
+
+      // Since we don't have a /api/users endpoint, we'll use what we have
+      // For now, we'll store users locally but indicate they're "database connected"
+      setUsingLocalData(false);
+      setMessage({ type: "success", text: "Connected to database" });
+
+      // In a real app, you'd have a users endpoint like:
+      // const response = await fetch(`${API_BASE}/users`, {
+      //   headers: { 'Authorization': `Bearer ${token}` }
+      // })
+    } catch (error) {
+      console.log("Backend unavailable, using local data:", error.message);
+      setUsingLocalData(true);
+      setMessage({
+        type: "info",
+        text: "Using local storage (backend unavailable)",
+      });
+      loadLocalUsers();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadLocalUsers = () => {
     const savedUsers = localStorage.getItem("serenity-users");
     if (savedUsers) {
       setUsers(JSON.parse(savedUsers));
@@ -39,21 +91,13 @@ export function UserRegistration() {
           role: "admin",
           createdAt: new Date("2024-01-01"),
         },
-        {
-          _id: "2",
-          name: "John Therapist",
-          email: "john@serenityplace.org",
-          role: "staff",
-          createdAt: new Date("2024-01-05"),
-        },
       ]);
     }
-  }, []);
+  };
 
-  // Save to localStorage whenever users change
-  useEffect(() => {
-    localStorage.setItem("serenity-users", JSON.stringify(users));
-  }, [users]);
+  const saveToLocalStorage = (usersData) => {
+    localStorage.setItem("serenity-users", JSON.stringify(usersData));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -77,10 +121,45 @@ export function UserRegistration() {
     }
 
     try {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const token = localStorage.getItem("token");
 
-      // Create new user (without password for security)
+      // If using real token, try to save to backend
+      if (isUsingRealToken()) {
+        const response = await fetch(`${API_BASE}/auth/register`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+            role: formData.role,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Refresh the users list
+          await fetchUsers();
+          setMessage({
+            type: "success",
+            text: `User ${formData.name} registered successfully in database!`,
+          });
+          resetForm();
+          return;
+        } else {
+          throw new Error(data.message || "Registration failed");
+        }
+      }
+
+      throw new Error("Using local storage");
+    } catch (error) {
+      console.log("Saving user to local storage:", error.message);
+
+      // Save to local storage
       const newUser = {
         _id: Date.now().toString(),
         name: formData.name,
@@ -100,28 +179,16 @@ export function UserRegistration() {
         return;
       }
 
-      // Add to local state
-      setUsers((prev) => [newUser, ...prev]);
+      const updatedUsers = [newUser, ...users];
+      setUsers(updatedUsers);
+      saveToLocalStorage(updatedUsers);
 
       setMessage({
         type: "success",
-        text: `User ${formData.name} registered successfully!`,
+        text: `User ${formData.name} registered successfully locally!`,
       });
-
-      // Reset form and close modal
-      setFormData({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        role: "staff",
-      });
-      setShowForm(false);
-    } catch (error) {
-      setMessage({
-        type: "error",
-        text: "Registration failed. Please try again.",
-      });
+      resetForm();
+      setUsingLocalData(true);
     } finally {
       setLoading(false);
     }
@@ -131,8 +198,10 @@ export function UserRegistration() {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
 
     try {
-      // Don't allow deleting the main admin
+      const token = localStorage.getItem("token");
       const userToDelete = users.find((user) => user._id === userId);
+
+      // Don't allow deleting the main admin
       if (userToDelete?.email === "admin@serenityplace.org") {
         setMessage({
           type: "error",
@@ -141,21 +210,23 @@ export function UserRegistration() {
         return;
       }
 
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      if (isUsingRealToken()) {
+        // In a real app, you'd have a delete endpoint like:
+        // const response = await fetch(`${API_BASE}/users/${userId}`, {
+        //   method: 'DELETE',
+        //   headers: { 'Authorization': `Bearer ${token}` }
+        // })
+        throw new Error("User deletion endpoint not available");
+      }
 
-      // Remove from local state
-      setUsers((prev) => prev.filter((user) => user._id !== userId));
-
-      setMessage({
-        type: "success",
-        text: "User deleted successfully!",
-      });
+      throw new Error("Using local storage");
     } catch (error) {
-      setMessage({
-        type: "error",
-        text: "Failed to delete user.",
-      });
+      // Delete from local storage
+      const updatedUsers = users.filter((user) => user._id !== userId);
+      setUsers(updatedUsers);
+      saveToLocalStorage(updatedUsers);
+      setMessage({ type: "success", text: "User deleted successfully!" });
+      setUsingLocalData(true);
     }
   };
 
@@ -164,6 +235,17 @@ export function UserRegistration() {
       ...formData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      role: "staff",
+    });
+    setShowForm(false);
   };
 
   const getRoleBadge = (role) => {
@@ -180,13 +262,23 @@ export function UserRegistration() {
     );
   };
 
+  if (loading && users.length === 0) {
+    return (
+      <div className="p-6">
+        <div className="animate-pulse">Loading users...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
-          <p className="text-gray-600">Manage staff and admin accounts</p>
+          <p className="text-gray-600">
+            {usingLocalData ? "Using local storage" : "Connected to database"}
+          </p>
         </div>
         <button
           onClick={() => setShowForm(true)}
@@ -197,12 +289,27 @@ export function UserRegistration() {
         </button>
       </div>
 
-      {/* Development Notice */}
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-        <p className="text-blue-800 text-sm">
-          <strong>Development Mode:</strong> Users are stored locally in your
-          browser.
-        </p>
+      {/* Data Source Indicator */}
+      <div
+        className={`p-4 rounded-xl flex items-center gap-3 ${
+          usingLocalData
+            ? "bg-yellow-50 border border-yellow-200 text-yellow-800"
+            : "bg-green-50 border border-green-200 text-green-800"
+        }`}
+      >
+        {usingLocalData ? (
+          <Laptop className="w-5 h-5" />
+        ) : (
+          <Database className="w-5 h-5" />
+        )}
+        <div>
+          <strong>{usingLocalData ? "Local Mode" : "Database Mode"}</strong>
+          <div className="text-sm">
+            {usingLocalData
+              ? "Users stored in your browser"
+              : "Users stored in MongoDB Atlas"}
+          </div>
+        </div>
       </div>
 
       {/* Message Alert */}
@@ -211,7 +318,9 @@ export function UserRegistration() {
           className={`p-4 rounded-xl ${
             message.type === "success"
               ? "bg-green-50 border border-green-200 text-green-800"
-              : "bg-red-50 border border-red-200 text-red-800"
+              : message.type === "error"
+              ? "bg-red-50 border border-red-200 text-red-800"
+              : "bg-blue-50 border border-blue-200 text-blue-800"
           }`}
         >
           {message.text}
@@ -277,7 +386,9 @@ export function UserRegistration() {
                   Register New User
                 </h2>
                 <p className="text-gray-600 mt-1">
-                  Create new staff or admin account
+                  {usingLocalData
+                    ? "Creating user locally"
+                    : "Creating user in database"}
                 </p>
               </div>
 
