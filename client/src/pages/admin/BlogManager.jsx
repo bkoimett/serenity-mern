@@ -5,7 +5,7 @@ import { format } from "date-fns";
 
 export function BlogManager() {
   const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingBlog, setEditingBlog] = useState(null);
@@ -16,41 +16,100 @@ export function BlogManager() {
     tags: "",
     status: "draft",
   });
+  const [message, setMessage] = useState("");
 
-  // Load blogs from localStorage or use mock data
+  const API_BASE = "http://localhost:5000/api";
+
+  // Fetch blogs from real backend
   useEffect(() => {
-    const savedBlogs = localStorage.getItem("serenity-blogs");
-    if (savedBlogs) {
-      setBlogs(JSON.parse(savedBlogs));
-    } else {
-      // Initial mock data
-      setBlogs([
-        {
-          _id: "1",
-          title: "Understanding Addiction Recovery",
-          excerpt:
-            "Learn about the journey of recovery and what to expect in the first 30 days of treatment.",
-          content: "Full content about addiction recovery...",
-          author: { name: "Dr. Sarah Johnson" },
-          status: "published",
-          tags: ["Recovery", "Treatment"],
-          createdAt: new Date("2024-01-15"),
-          updatedAt: new Date("2024-01-15"),
-        },
-      ]);
-    }
+    fetchBlogs();
   }, []);
 
-  // Save to localStorage whenever blogs change
-  useEffect(() => {
-    localStorage.setItem("serenity-blogs", JSON.stringify(blogs));
-  }, [blogs]);
+  const fetchBlogs = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE}/blog/admin`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setBlogs(data);
+        setMessage("");
+      } else {
+        const errorData = await response.json();
+        setMessage(`Error: ${errorData.message}`);
+        // Fallback to local storage if backend fails
+        const savedBlogs = localStorage.getItem("serenity-blogs");
+        if (savedBlogs) {
+          setBlogs(JSON.parse(savedBlogs));
+        }
+      }
+    } catch (error) {
+      console.error("Backend unavailable, using local data");
+      setMessage("Backend connection failed. Using local data.");
+      // Fallback to local storage
+      const savedBlogs = localStorage.getItem("serenity-blogs");
+      if (savedBlogs) {
+        setBlogs(JSON.parse(savedBlogs));
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setMessage("");
 
     try {
+      const token = localStorage.getItem("token");
+      const url = editingBlog
+        ? `${API_BASE}/blog/${editingBlog._id}`
+        : `${API_BASE}/blog`;
+
+      const method = editingBlog ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          ...formData,
+          tags: formData.tags
+            .split(",")
+            .map((tag) => tag.trim())
+            .filter((tag) => tag),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        await fetchBlogs(); // Refresh the list
+        resetForm();
+        setMessage(
+          editingBlog
+            ? "Blog updated successfully!"
+            : "Blog created successfully!"
+        );
+
+        // Also save to local storage as backup
+        const updatedBlogs = editingBlog
+          ? blogs.map((blog) => (blog._id === editingBlog._id ? data : blog))
+          : [data, ...blogs];
+        localStorage.setItem("serenity-blogs", JSON.stringify(updatedBlogs));
+      } else {
+        setMessage(`Error: ${data.message}`);
+      }
+    } catch (error) {
+      setMessage("Network error. Saving locally instead.");
+      // Fallback to local storage
       const blogData = {
         _id: editingBlog ? editingBlog._id : Date.now().toString(),
         title: formData.title,
@@ -67,16 +126,17 @@ export function BlogManager() {
       };
 
       if (editingBlog) {
-        setBlogs((prev) =>
-          prev.map((blog) => (blog._id === editingBlog._id ? blogData : blog))
+        const updatedBlogs = blogs.map((blog) =>
+          blog._id === editingBlog._id ? blogData : blog
         );
+        setBlogs(updatedBlogs);
+        localStorage.setItem("serenity-blogs", JSON.stringify(updatedBlogs));
       } else {
-        setBlogs((prev) => [blogData, ...prev]);
+        const updatedBlogs = [blogData, ...blogs];
+        setBlogs(updatedBlogs);
+        localStorage.setItem("serenity-blogs", JSON.stringify(updatedBlogs));
       }
-
       resetForm();
-    } catch (error) {
-      console.error("Error saving blog:", error);
     } finally {
       setLoading(false);
     }
@@ -88,7 +148,7 @@ export function BlogManager() {
       title: blog.title,
       excerpt: blog.excerpt,
       content: blog.content,
-      tags: blog.tags.join(", "),
+      tags: blog.tags ? blog.tags.join(", ") : "",
       status: blog.status,
     });
     setShowForm(true);
@@ -99,9 +159,30 @@ export function BlogManager() {
       return;
 
     try {
-      setBlogs((prev) => prev.filter((blog) => blog._id !== blogId));
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE}/blog/${blogId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        await fetchBlogs();
+        setMessage("Blog deleted successfully!");
+        // Also update local storage
+        const updatedBlogs = blogs.filter((blog) => blog._id !== blogId);
+        localStorage.setItem("serenity-blogs", JSON.stringify(updatedBlogs));
+      } else {
+        const errorData = await response.json();
+        setMessage(`Error: ${errorData.message}`);
+      }
     } catch (error) {
-      console.error("Error deleting blog:", error);
+      setMessage("Network error. Deleting locally.");
+      // Fallback to local deletion
+      const updatedBlogs = blogs.filter((blog) => blog._id !== blogId);
+      setBlogs(updatedBlogs);
+      localStorage.setItem("serenity-blogs", JSON.stringify(updatedBlogs));
     }
   };
 
@@ -135,10 +216,19 @@ export function BlogManager() {
     (blog) =>
       blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       blog.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      blog.tags.some((tag) =>
-        tag.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      (blog.tags &&
+        blog.tags.some((tag) =>
+          tag.toLowerCase().includes(searchTerm.toLowerCase())
+        ))
   );
+
+  if (loading && blogs.length === 0) {
+    return (
+      <div className="p-6">
+        <div className="animate-pulse">Loading blogs from database...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -146,7 +236,9 @@ export function BlogManager() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Blog Management</h1>
-          <p className="text-gray-600">Create and manage blog posts</p>
+          <p className="text-gray-600">
+            Create and manage blog posts in database
+          </p>
         </div>
         <button
           onClick={() => setShowForm(true)}
@@ -157,14 +249,22 @@ export function BlogManager() {
         </button>
       </div>
 
-      {/* Development Notice */}
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-        <p className="text-blue-800 text-sm">
-          <strong>Development Mode:</strong> Blog posts are stored locally in
-          your browser.
-        </p>
-      </div>
+      {/* Message Alert */}
+      {message && (
+        <div
+          className={`p-4 rounded-xl ${
+            message.includes("Error")
+              ? "bg-red-50 border border-red-200 text-red-800"
+              : message.includes("locally")
+              ? "bg-yellow-50 border border-yellow-200 text-yellow-800"
+              : "bg-green-50 border border-green-200 text-green-800"
+          }`}
+        >
+          {message}
+        </div>
+      )}
 
+      {/* Rest of the component remains the same as before */}
       {/* Blog Form */}
       {showForm && (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
@@ -319,22 +419,24 @@ export function BlogManager() {
                 <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
                   <div className="flex items-center">
                     <User className="w-4 h-4 mr-1" />
-                    {blog.author?.name}
+                    {blog.author?.name || "Unknown Author"}
                   </div>
                   <div className="flex items-center">
                     <Calendar className="w-4 h-4 mr-1" />
                     {format(new Date(blog.createdAt), "MMM dd, yyyy")}
                   </div>
-                  <div className="flex flex-wrap gap-1">
-                    {blog.tags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
+                  {blog.tags && blog.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {blog.tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -361,7 +463,7 @@ export function BlogManager() {
         ))}
 
         {/* Empty State */}
-        {filteredBlogs.length === 0 && (
+        {filteredBlogs.length === 0 && !loading && (
           <div className="text-center py-12">
             <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Search className="w-8 h-8 text-gray-400" />
