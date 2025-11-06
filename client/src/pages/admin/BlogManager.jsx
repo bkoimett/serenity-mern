@@ -1,20 +1,11 @@
-// src/pages/admin/BlogManager.jsx
+// client/src/pages/admin/BlogManager.jsx
 import { useState, useEffect } from "react";
-import {
-  Plus,
-  Edit,
-  Trash2,
-  Eye,
-  Search,
-  Filter,
-  Calendar,
-  User,
-} from "lucide-react";
+import { Plus, Edit, Trash2, Search, Calendar, User } from "lucide-react";
 import { format } from "date-fns";
 
 export function BlogManager() {
   const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingBlog, setEditingBlog] = useState(null);
@@ -26,87 +17,64 @@ export function BlogManager() {
     status: "draft",
   });
 
-  // Fetch blogs from API
+  // Load blogs from localStorage or use mock data
   useEffect(() => {
-    fetchBlogs();
-  }, []);
-
-  const fetchBlogs = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:5000/api/blog/admin", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setBlogs(data);
-      }
-    } catch (error) {
-      console.error("Error fetching blogs:", error);
-      // Fallback to mock data for demo
+    const savedBlogs = localStorage.getItem("serenity-blogs");
+    if (savedBlogs) {
+      setBlogs(JSON.parse(savedBlogs));
+    } else {
+      // Initial mock data
       setBlogs([
         {
           _id: "1",
           title: "Understanding Addiction Recovery",
-          excerpt: "Learn about the journey of recovery...",
-          content: "Full content here...",
+          excerpt:
+            "Learn about the journey of recovery and what to expect in the first 30 days of treatment.",
+          content: "Full content about addiction recovery...",
           author: { name: "Dr. Sarah Johnson" },
           status: "published",
           tags: ["Recovery", "Treatment"],
           createdAt: new Date("2024-01-15"),
           updatedAt: new Date("2024-01-15"),
         },
-        {
-          _id: "2",
-          title: "The Role of Family in Recovery",
-          excerpt: "How family support impacts treatment...",
-          content: "Full content here...",
-          author: { name: "Dr. Mike Chen" },
-          status: "draft",
-          tags: ["Family", "Support"],
-          createdAt: new Date("2024-01-10"),
-          updatedAt: new Date("2024-01-10"),
-        },
       ]);
-    } finally {
-      setLoading(false);
     }
-  };
+  }, []);
+
+  // Save to localStorage whenever blogs change
+  useEffect(() => {
+    localStorage.setItem("serenity-blogs", JSON.stringify(blogs));
+  }, [blogs]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-      const url = editingBlog
-        ? `http://localhost:5000/api/blog/${editingBlog._id}`
-        : "http://localhost:5000/api/blog";
+      const blogData = {
+        _id: editingBlog ? editingBlog._id : Date.now().toString(),
+        title: formData.title,
+        excerpt: formData.excerpt,
+        content: formData.content,
+        tags: formData.tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter((tag) => tag),
+        status: formData.status,
+        author: { name: "You" },
+        createdAt: editingBlog ? editingBlog.createdAt : new Date(),
+        updatedAt: new Date(),
+      };
 
-      const method = editingBlog ? "PUT" : "POST";
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          ...formData,
-          tags: formData.tags
-            .split(",")
-            .map((tag) => tag.trim())
-            .filter((tag) => tag),
-        }),
-      });
-
-      if (response.ok) {
-        await fetchBlogs();
-        resetForm();
+      if (editingBlog) {
+        setBlogs((prev) =>
+          prev.map((blog) => (blog._id === editingBlog._id ? blogData : blog))
+        );
+      } else {
+        setBlogs((prev) => [blogData, ...prev]);
       }
+
+      resetForm();
     } catch (error) {
       console.error("Error saving blog:", error);
     } finally {
@@ -131,17 +99,7 @@ export function BlogManager() {
       return;
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:5000/api/blog/${blogId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        await fetchBlogs();
-      }
+      setBlogs((prev) => prev.filter((blog) => blog._id !== blogId));
     } catch (error) {
       console.error("Error deleting blog:", error);
     }
@@ -182,14 +140,6 @@ export function BlogManager() {
       )
   );
 
-  if (loading && blogs.length === 0) {
-    return (
-      <div className="p-6">
-        <div className="animate-pulse">Loading blogs...</div>
-      </div>
-    );
-  }
-
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -205,6 +155,14 @@ export function BlogManager() {
           <Plus className="w-4 h-4 mr-2" />
           New Post
         </button>
+      </div>
+
+      {/* Development Notice */}
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+        <p className="text-blue-800 text-sm">
+          <strong>Development Mode:</strong> Blog posts are stored locally in
+          your browser.
+        </p>
       </div>
 
       {/* Blog Form */}
@@ -308,7 +266,7 @@ export function BlogManager() {
                   ? "Saving..."
                   : editingBlog
                   ? "Update Post"
-                  : "Publish Post"}
+                  : "Create Post"}
               </button>
               <button
                 type="button"
@@ -322,24 +280,23 @@ export function BlogManager() {
         </div>
       )}
 
-      {/* Search and Filter */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
+      {/* Search and Blogs List */}
+      <div className="space-y-4">
+        {/* Search */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
-              placeholder="Search blogs by title, content, or tags..."
+              placeholder="Search blogs..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
         </div>
-      </div>
 
-      {/* Blogs List */}
-      <div className="space-y-4">
+        {/* Blogs List */}
         {filteredBlogs.map((blog) => (
           <div
             key={blog._id}

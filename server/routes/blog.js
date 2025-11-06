@@ -59,8 +59,10 @@ router.get("/:id", async (req, res) => {
       return res.status(404).json({ message: "Blog post not found" });
     }
 
+    // FIX: This logic is broken - req.user won't exist for public routes
     // Only return published posts to non-admin users
-    if (blog.status !== "published" && !req.user?.role === "admin") {
+    if (blog.status !== "published") {
+      // For public access, only show published posts
       return res.status(404).json({ message: "Blog post not found" });
     }
 
@@ -69,7 +71,6 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 // @route   POST /api/blog
 // @desc    Create new blog post
 // @access  Private (Admin)
