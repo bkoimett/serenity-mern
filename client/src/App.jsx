@@ -1,4 +1,4 @@
-// src/App.jsx
+// src/App.jsx - UPDATED VERSION
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { Home } from "./pages/Home";
@@ -55,10 +55,13 @@ function App() {
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
 
+          {/* Main Admin Layout - Accessible to both admin and staff */}
           <Route
             path="/admin"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute adminOnly={false}>
+                {" "}
+                {/* EXPLICIT: staff can access */}
                 <AdminLayout />
               </ProtectedRoute>
             }
@@ -66,23 +69,59 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="blog" element={<BlogManager />} />
             <Route path="users" element={<UserRegistration />} />
+
+            {/* Admin-only routes */}
             <Route
               path="contacts"
               element={
-                <div className="p-6">Contacts Manager - Coming Soon</div>
+                <ProtectedRoute adminOnly={true}>
+                  {" "}
+                  {/* EXPLICIT: admin only */}
+                  <div className="p-6">Contacts Manager - Coming Soon</div>
+                </ProtectedRoute>
               }
             />
             <Route
               path="messages"
               element={
-                <div className="p-6">Messages Manager - Coming Soon</div>
+                <ProtectedRoute adminOnly={true}>
+                  {" "}
+                  {/* EXPLICIT: admin only */}
+                  <div className="p-6">Messages Manager - Coming Soon</div>
+                </ProtectedRoute>
               }
             />
             <Route
               path="settings"
-              element={<div className="p-6">Settings - Coming Soon</div>}
+              element={
+                <ProtectedRoute adminOnly={true}>
+                  {" "}
+                  {/* EXPLICIT: admin only */}
+                  <div className="p-6">Settings - Coming Soon</div>
+                </ProtectedRoute>
+              }
             />
           </Route>
+
+          {/* 404 Page */}
+          <Route
+            path="*"
+            element={
+              <Layout>
+                <div className="min-h-screen flex items-center justify-center">
+                  <div className="text-center">
+                    <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                      404
+                    </h1>
+                    <p className="text-gray-600 mb-4">Page not found</p>
+                    <a href="/" className="text-blue-600 hover:text-blue-700">
+                      Return to Home
+                    </a>
+                  </div>
+                </div>
+              </Layout>
+            }
+          />
         </Routes>
       </Router>
     </AuthProvider>

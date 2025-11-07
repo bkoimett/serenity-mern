@@ -2,7 +2,7 @@
 import express from "express";
 import { body, validationResult } from "express-validator";
 import Blog from "../models/Blog.js";
-import { auth, adminAuth } from "../middleware/auth.js";
+import { auth, adminAuth, staffAuth } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -35,13 +35,22 @@ router.get("/", async (req, res) => {
 });
 
 // @route   GET /api/blog/admin
-// @desc    Get all blogs (for admin - includes drafts)
-// @access  Private (Admin)
-router.get("/admin", adminAuth, async (req, res) => {
+// @desc    Get all blogs (admin sees all, staff sees only their own)
+// @access  Private (Admin & Staff)
+router.get("/admin", staffAuth, async (req, res) => {
   try {
-    const blogs = await Blog.find()
-      .populate("author", "name")
-      .sort({ createdAt: -1 });
+    let blogs;
+    if (req.user.role === "admin") {
+      // Admin sees all blogs
+      blogs = await Blog.find()
+        .populate("author", "name")
+        .sort({ createdAt: -1 });
+    } else {
+      // Staff only sees their own blogs
+      blogs = await Blog.find({ author: req.user.id })
+        .populate("author", "name")
+        .sort({ createdAt: -1 });
+    }
     res.json(blogs);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -50,7 +59,7 @@ router.get("/admin", adminAuth, async (req, res) => {
 
 // @route   GET /api/blog/:id
 // @desc    Get single blog post
-// @access  Public
+// @access  Public for published posts, Private for drafts
 router.get("/:id", async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id).populate("author", "name");
@@ -59,10 +68,30 @@ router.get("/:id", async (req, res) => {
       return res.status(404).json({ message: "Blog post not found" });
     }
 
-    // FIX: This logic is broken - req.user won't exist for public routes
-    // Only return published posts to non-admin users
+    // For public access, only show published posts
     if (blog.status !== "published") {
-      // For public access, only show published posts
+      // Check if user is authenticated and has access
+      try {
+        const token = req.header("Authorization")?.replace("Bearer ", "");
+        if (token) {
+          const jwt = require("jsonwebtoken");
+          const decoded = jwt.verify(token, process.env.JWT_SECRET);
+          const User = require("../models/User.js");
+          const user = await User.findById(decoded.user.id);
+
+          if (
+            user &&
+            (user.role === "admin" ||
+              (user.role === "staff" &&
+                blog.author._id.toString() === user._id.toString()))
+          ) {
+            return res.json(blog);
+          }
+        }
+      } catch (authError) {
+        // Ignore auth errors and return 404
+      }
+
       return res.status(404).json({ message: "Blog post not found" });
     }
 
@@ -71,13 +100,14 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 // @route   POST /api/blog
 // @desc    Create new blog post
-// @access  Private (Admin)
+// @access  Private (Admin & Staff)
 router.post(
   "/",
   [
-    adminAuth,
+    staffAuth,
     body("title", "Title is required").not().isEmpty(),
     body("content", "Content is required").not().isEmpty(),
   ],
@@ -116,11 +146,11 @@ router.post(
 
 // @route   PUT /api/blog/:id
 // @desc    Update blog post
-// @access  Private (Admin)
+// @access  Private (Admin & Staff - staff can only edit their own posts)
 router.put(
   "/:id",
   [
-    adminAuth,
+    staffAuth,
     body("title", "Title is required").not().isEmpty(),
     body("content", "Content is required").not().isEmpty(),
   ],
@@ -135,6 +165,15 @@ router.put(
 
       if (!blog) {
         return res.status(404).json({ message: "Blog post not found" });
+      }
+
+      // Staff can only edit their own posts, admin can edit all
+      if (req.user.role !== "admin" && blog.author.toString() !== req.user.id) {
+        return res
+          .status(403)
+          .json({
+            message: "Access denied. You can only edit your own posts.",
+          });
       }
 
       // Generate new slug if title changed
@@ -165,13 +204,29 @@ router.put(
 
 // @route   DELETE /api/blog/:id
 // @desc    Delete blog post
-// @access  Private (Admin)
-router.delete("/:id", adminAuth, async (req, res) => {
+// @access  Private (Admin & Staff - staff can only delete their own draft posts)
+router.delete("/:id", staffAuth, async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id);
 
     if (!blog) {
       return res.status(404).json({ message: "Blog post not found" });
+    }
+
+    // Staff can only delete their own draft posts, admin can delete all
+    if (req.user.role !== "admin") {
+      if (blog.author.toString() !== req.user.id) {
+        return res
+          .status(403)
+          .json({
+            message: "Access denied. You can only delete your own posts.",
+          });
+      }
+      if (blog.status === "published") {
+        return res
+          .status(403)
+          .json({ message: "Access denied. You can only delete draft posts." });
+      }
     }
 
     await Blog.findByIdAndDelete(req.params.id);

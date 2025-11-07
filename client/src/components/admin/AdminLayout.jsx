@@ -1,4 +1,4 @@
-// src/components/admin/AdminLayout.jsx
+// src/components/admin/AdminLayout.jsx - UPDATE NAVIGATION
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { Link, useLocation, Outlet } from "react-router-dom";
@@ -17,16 +17,25 @@ import {
 export function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const location = useLocation();
 
   const navigation = [
-    { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
-    { name: "Blog Posts", href: "/admin/blog", icon: FileText },
-    { name: "User Management", href: "/admin/users", icon: Users },
-    { name: "Contacts", href: "/admin/contacts", icon: Users },
-    { name: "Messages", href: "/admin/messages", icon: MessageSquare },
-    { name: "Settings", href: "/admin/settings", icon: Settings },
+    { name: "Dashboard", href: "/admin", icon: LayoutDashboard, access: "all" },
+    { name: "Blog Posts", href: "/admin/blog", icon: FileText, access: "all" },
+    { name: "Users", href: "/admin/users", icon: Users, access: "all" }, // CHANGED: staff can view users
+    {
+      name: "Contacts",
+      href: "/admin/contacts",
+      icon: MessageSquare,
+      access: "admin",
+    },
+    {
+      name: "Settings",
+      href: "/admin/settings",
+      icon: Settings,
+      access: "admin",
+    },
   ];
 
   const handleLogout = () => {
@@ -36,7 +45,7 @@ export function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Sidebar for Mobile */}
+      {/* Mobile Sidebar */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 md:hidden">
           <div
@@ -57,6 +66,9 @@ export function AdminLayout() {
             </div>
             <nav className="mt-4 px-4 space-y-2">
               {navigation.map((item) => {
+                // Show item based on access level
+                if (item.access === "admin" && !isAdmin) return null;
+
                 const isActive = location.pathname === item.href;
                 return (
                   <Link
@@ -82,7 +94,6 @@ export function AdminLayout() {
       {/* Desktop Sidebar */}
       <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
         <div className="flex flex-col flex-1 min-h-0 bg-white border-r border-gray-200">
-          {/* Sidebar Header */}
           <div className="flex items-center h-16 px-4 border-b border-gray-200">
             <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-teal-600 rounded-lg flex items-center justify-center mr-3">
               <span className="text-white font-bold text-sm">SP</span>
@@ -94,10 +105,11 @@ export function AdminLayout() {
               </span>
             </div>
           </div>
-
-          {/* Navigation */}
           <nav className="flex-1 px-4 py-4 space-y-2">
             {navigation.map((item) => {
+              // Show item based on access level
+              if (item.access === "admin" && !isAdmin) return null;
+
               const isActive = location.pathname === item.href;
               return (
                 <Link
@@ -144,10 +156,10 @@ export function AdminLayout() {
                 </div>
                 <div className="hidden md:block text-left">
                   <div className="font-medium text-gray-900">
-                    {user?.name || "Admin"}
+                    {user?.name || "User"}
                   </div>
                   <div className="text-xs text-gray-500">
-                    {user?.role || "Administrator"}
+                    {user?.role || "User"}
                   </div>
                 </div>
                 <ChevronDown className="w-4 h-4 text-gray-400" />

@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { body, validationResult } from "express-validator";
 import User from "../models/User.js";
-import { auth, adminAuth } from "../middleware/auth.js"; // Import both middlewares
+import { auth, adminAuth, staffAuth } from "../middleware/auth.js"; // Import all middlewares
 
 const router = express.Router();
 
@@ -14,7 +14,7 @@ const router = express.Router();
 router.post(
   "/register",
   [
-    adminAuth, // Use adminAuth instead of auth + manual role check
+    adminAuth,
     body("name", "Name is required").not().isEmpty(),
     body("email", "Please include a valid email").isEmail(),
     body("password", "Password must be at least 6 characters").isLength({
@@ -237,9 +237,9 @@ router.put(
 );
 
 // @route   GET /api/auth/users
-// @desc    Get all users (admin only)
-// @access  Private (Admin)
-router.get("/users", adminAuth, async (req, res) => {
+// @desc    Get all users (both admin and staff can view)
+// @access  Private (Admin & Staff)
+router.get("/users", staffAuth, async (req, res) => {
   try {
     const users = await User.find().select("-password").sort({ createdAt: -1 });
     res.json(users);
@@ -248,6 +248,75 @@ router.get("/users", adminAuth, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+// @route   PUT /api/auth/users/:id
+// @desc    Update user (admin only)
+// @access  Private (Admin)
+router.put(
+  "/users/:id",
+  adminAuth,
+  [
+    body("name", "Name is required").not().isEmpty(),
+    body("email", "Please include a valid email").isEmail(),
+    body("role", "Role is required").isIn(["admin", "staff"]),
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const { name, email, role, password } = req.body;
+
+      // Find the user to update
+      let user = await User.findById(req.params.id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Check if email is already taken by another user
+      if (email !== user.email) {
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+          return res.status(400).json({ message: "Email already in use" });
+        }
+      }
+
+      // Prepare update data
+      const updateData = { name, email, role };
+
+      // If password is provided, hash it
+      if (password) {
+        if (password.length < 6) {
+          return res
+            .status(400)
+            .json({ message: "Password must be at least 6 characters" });
+        }
+        const salt = await bcrypt.genSalt(12);
+        updateData.password = await bcrypt.hash(password, salt);
+      }
+
+      // Update the user
+      user = await User.findByIdAndUpdate(
+        req.params.id,
+        { $set: updateData },
+        { new: true }
+      ).select("-password");
+
+      res.json(user);
+    } catch (error) {
+      console.error(error.message);
+
+      // Handle duplicate key error (email)
+      if (error.code === 11000) {
+        return res.status(400).json({ message: "Email already in use" });
+      }
+
+      res.status(500).json({ message: "Server error" });
+    }
+  }
+);
 
 // @route   DELETE /api/auth/users/:id
 // @desc    Delete user (admin only)
@@ -276,68 +345,3 @@ router.delete("/users/:id", adminAuth, async (req, res) => {
 });
 
 export default router;
-
-
-// server/routes/auth.js - ADD THIS ROUTE
-
-// @route PUT /api/auth/users/:id
-// @desc Update user
-// @access Private (Admin)
-router.put('/users/:id', adminAuth, [
-  body('name', 'Name is required').not().isEmpty(),
-  body('email', 'Please include a valid email').isEmail(),
-  body('role', 'Role is required').isIn(['admin', 'staff'])
-], async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { name, email, role, password } = req.body;
-    
-    // Find the user to update
-    let user = await User.findById(req.params.id);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // Check if email is already taken by another user
-    if (email !== user.email) {
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        return res.status(400).json({ message: 'Email already in use' });
-      }
-    }
-
-    // Prepare update data
-    const updateData = { name, email, role };
-
-    // If password is provided, hash it
-    if (password) {
-      if (password.length < 6) {
-        return res.status(400).json({ message: 'Password must be at least 6 characters' });
-      }
-      const salt = await bcrypt.genSalt(12);
-      updateData.password = await bcrypt.hash(password, salt);
-    }
-
-    // Update the user
-    user = await User.findByIdAndUpdate(
-      req.params.id,
-      { $set: updateData },
-      { new: true }
-    ).select('-password');
-
-    res.json(user);
-  } catch (error) {
-    console.error(error.message);
-    
-    // Handle duplicate key error (email)
-    if (error.code === 11000) {
-      return res.status(400).json({ message: 'Email already in use' });
-    }
-    
-    res.status(500).json({ message: 'Server error' });
-  }
-});

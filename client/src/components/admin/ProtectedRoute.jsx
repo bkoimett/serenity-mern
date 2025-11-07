@@ -2,8 +2,8 @@
 import { useAuth } from "../../context/AuthContext";
 import { AdminLogin } from "../../pages/admin/AdminLogin";
 
-export function ProtectedRoute({ children, adminOnly = true }) {
-  const { isAuthenticated, isAdmin, loading } = useAuth();
+export function ProtectedRoute({ children, adminOnly = false }) {
+  const { isAuthenticated, isAdmin, isStaff, loading } = useAuth();
 
   if (loading) {
     return (
@@ -43,7 +43,10 @@ export function ProtectedRoute({ children, adminOnly = true }) {
             Access Denied
           </h1>
           <p className="text-gray-600">
-            You don't have permission to access this page.
+            Admin rights required for this section.
+          </p>
+          <p className="text-gray-500 text-sm mt-2">
+            You are logged in as {isStaff ? "Staff" : "User"}
           </p>
         </div>
       </div>

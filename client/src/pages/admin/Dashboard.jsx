@@ -1,4 +1,4 @@
-// src/pages/admin/Dashboard.jsx
+// src/pages/admin/Dashboard.jsx - UPDATED FOR STAFF
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import {
@@ -8,15 +8,19 @@ import {
   TrendingUp,
   Eye,
   Calendar,
+  Edit,
+  Plus,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export function Dashboard() {
-  const { user } = useAuth();
+  const { user, isAdmin, isStaff } = useAuth();
   const [stats, setStats] = useState({
     totalBlogs: 0,
     totalContacts: 0,
     totalMessages: 0,
     monthlyVisitors: 0,
+    myBlogs: 0,
   });
 
   const [recentActivity, setRecentActivity] = useState([]);
@@ -24,10 +28,11 @@ export function Dashboard() {
   useEffect(() => {
     // Mock data - replace with API calls
     setStats({
-      totalBlogs: 12,
-      totalContacts: 47,
-      totalMessages: 23,
-      monthlyVisitors: 1245,
+      totalBlogs: isAdmin ? 12 : 3, // Staff only sees their count
+      totalContacts: isAdmin ? 47 : 0, // Staff might not see contacts
+      totalMessages: isAdmin ? 23 : 0,
+      monthlyVisitors: isAdmin ? 1245 : 0,
+      myBlogs: 3,
     });
 
     setRecentActivity([
@@ -37,156 +42,182 @@ export function Dashboard() {
         user: "You",
         time: "2 hours ago",
       },
-      {
-        id: 2,
-        action: "Contact form submission",
-        user: "John Doe",
-        time: "4 hours ago",
-      },
-      { id: 3, action: "Blog post updated", user: "You", time: "1 day ago" },
-      {
-        id: 4,
-        action: "New user registered",
-        user: "Sarah Wilson",
-        time: "2 days ago",
-      },
+      { id: 2, action: "Blog post updated", user: "You", time: "1 day ago" },
+      ...(isAdmin
+        ? [
+            {
+              id: 3,
+              action: "Contact form submission",
+              user: "John Doe",
+              time: "4 hours ago",
+            },
+          ]
+        : []),
     ]);
-  }, []);
-
-  const statCards = [
-    {
-      title: "Total Blog Posts",
-      value: stats.totalBlogs,
-      icon: FileText,
-      color: "blue",
-      change: "+2 this month",
-    },
-    {
-      title: "Contact Submissions",
-      value: stats.totalContacts,
-      icon: Users,
-      color: "green",
-      change: "+5 today",
-    },
-    {
-      title: "Unread Messages",
-      value: stats.totalMessages,
-      icon: MessageSquare,
-      color: "orange",
-      change: "3 urgent",
-    },
-    {
-      title: "Monthly Visitors",
-      value: stats.monthlyVisitors.toLocaleString(),
-      icon: TrendingUp,
-      color: "purple",
-      change: "+12.5%",
-    },
-  ];
+  }, [isAdmin]);
 
   return (
-    <div className="space-y-6">
+    <div className="p-6 space-y-6">
       {/* Welcome Header */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Welcome back, {user?.name || "Admin"}!
+          Welcome back, {user?.name}!
         </h1>
         <p className="text-gray-600">
-          Here's what's happening with Serenity Place today.
+          {isAdmin ? "Administrator Dashboard" : "Staff Dashboard"} •{" "}
+          {new Date().toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
         </p>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statCards.map((card, index) => {
-          const Icon = card.icon;
-          const colorClasses = {
-            blue: "bg-blue-500",
-            green: "bg-green-500",
-            orange: "bg-orange-500",
-            purple: "bg-purple-500",
-          };
-
-          return (
-            <div
-              key={index}
-              className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div
-                  className={`w-12 h-12 ${
-                    colorClasses[card.color]
-                  } rounded-xl flex items-center justify-center`}
-                >
-                  <Icon className="w-6 h-6 text-white" />
-                </div>
-                <span className="text-sm font-medium text-gray-500">
-                  {card.change}
-                </span>
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-1">
-                {card.value}
-              </h3>
-              <p className="text-sm text-gray-600">{card.title}</p>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Recent Activity & Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Activity */}
+        {/* My Blogs Stat - Visible to all */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Recent Activity
-          </h2>
-          <div className="space-y-4">
-            {recentActivity.map((activity) => (
-              <div key={activity.id} className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-900">{activity.action}</p>
-                  <div className="flex items-center text-xs text-gray-500 mt-1">
-                    <span>{activity.user}</span>
-                    <span className="mx-2">•</span>
-                    <span>{activity.time}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">My Blog Posts</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {stats.myBlogs}
+              </p>
+            </div>
+            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+              <Edit className="w-6 h-6 text-blue-600" />
+            </div>
+          </div>
+          <div className="mt-4">
+            <Link
+              to="/admin/blog"
+              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+            >
+              Manage my posts →
+            </Link>
           </div>
         </div>
 
-        {/* Quick Actions */}
+        {/* Total Blogs - Visible to all */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Quick Actions
-          </h2>
-          <div className="grid grid-cols-2 gap-4">
-            <button className="p-4 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors text-left group">
-              <FileText className="w-8 h-8 text-blue-600 mb-2" />
-              <div className="font-medium text-gray-900">New Blog Post</div>
-              <div className="text-sm text-gray-600">Create article</div>
-            </button>
-
-            <button className="p-4 bg-green-50 hover:bg-green-100 rounded-xl transition-colors text-left group">
-              <Eye className="w-8 h-8 text-green-600 mb-2" />
-              <div className="font-medium text-gray-900">View Site</div>
-              <div className="text-sm text-gray-600">Visit website</div>
-            </button>
-
-            <button className="p-4 bg-orange-50 hover:bg-orange-100 rounded-xl transition-colors text-left group">
-              <Users className="w-8 h-8 text-orange-600 mb-2" />
-              <div className="font-medium text-gray-900">Contacts</div>
-              <div className="text-sm text-gray-600">Manage leads</div>
-            </button>
-
-            <button className="p-4 bg-purple-50 hover:bg-purple-100 rounded-xl transition-colors text-left group">
-              <Calendar className="w-8 h-8 text-purple-600 mb-2" />
-              <div className="font-medium text-gray-900">Schedule</div>
-              <div className="text-sm text-gray-600">View calendar</div>
-            </button>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">
+                Total Blog Posts
+              </p>
+              <p className="text-2xl font-bold text-gray-900">
+                {stats.totalBlogs}
+              </p>
+            </div>
+            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+              <FileText className="w-6 h-6 text-green-600" />
+            </div>
           </div>
+        </div>
+
+        {/* Admin-only stats */}
+        {isAdmin && (
+          <>
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Contacts</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {stats.totalContacts}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                  <Users className="w-6 h-6 text-purple-600" />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">
+                    Monthly Visitors
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {stats.monthlyVisitors}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                  <Eye className="w-6 h-6 text-orange-600" />
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Quick Actions */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          Quick Actions
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Link
+            to="/admin/blog"
+            className="bg-blue-50 hover:bg-blue-100 rounded-xl p-4 text-center transition-colors"
+          >
+            <FileText className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+            <p className="font-medium text-gray-900">Manage Blogs</p>
+            <p className="text-sm text-gray-600">Create and edit posts</p>
+          </Link>
+
+          {isAdmin && (
+            <Link
+              to="/admin/users"
+              className="bg-green-50 hover:bg-green-100 rounded-xl p-4 text-center transition-colors"
+            >
+              <Users className="w-8 h-8 text-green-600 mx-auto mb-2" />
+              <p className="font-medium text-gray-900">Manage Users</p>
+              <p className="text-sm text-gray-600">View team members</p>
+            </Link>
+          )}
+
+          <Link
+            to="/admin/blog?create=new"
+            className="bg-purple-50 hover:bg-purple-100 rounded-xl p-4 text-center transition-colors"
+          >
+            <Plus className="w-8 h-8 text-purple-600 mx-auto mb-2" />
+            <p className="font-medium text-gray-900">New Blog Post</p>
+            <p className="text-sm text-gray-600">Write a new article</p>
+          </Link>
+
+          {isAdmin && (
+            <Link
+              to="/admin/contacts"
+              className="bg-orange-50 hover:bg-orange-100 rounded-xl p-4 text-center transition-colors"
+            >
+              <MessageSquare className="w-8 h-8 text-orange-600 mx-auto mb-2" />
+              <p className="font-medium text-gray-900">Contacts</p>
+              <p className="text-sm text-gray-600">View inquiries</p>
+            </Link>
+          )}
+        </div>
+      </div>
+
+      {/* Recent Activity */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          Recent Activity
+        </h2>
+        <div className="space-y-3">
+          {recentActivity.map((activity) => (
+            <div
+              key={activity.id}
+              className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0"
+            >
+              <div>
+                <p className="font-medium text-gray-900">{activity.action}</p>
+                <p className="text-sm text-gray-600">by {activity.user}</p>
+              </div>
+              <span className="text-sm text-gray-500">{activity.time}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

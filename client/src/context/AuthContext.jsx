@@ -5,6 +5,7 @@ const AuthContext = createContext();
 
 const API_BASE = "http://localhost:5000/api";
 
+// Export useAuth as a named export
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -13,6 +14,7 @@ export const useAuth = () => {
   return context;
 };
 
+// Export AuthProvider as a named export
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -172,7 +174,11 @@ export const AuthProvider = ({ children }) => {
     logout,
     isAuthenticated: !!user,
     isAdmin: user?.role === "admin",
+    isStaff: user?.role === "staff" || user?.role === "admin", // Staff includes admin
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
+
+// Export default as well for flexibility
+export default AuthContext;
