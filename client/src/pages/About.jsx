@@ -47,25 +47,25 @@ export function About() {
 
   const team = [
     {
-      name: "Dr. Sarah Johnson",
-      role: "Medical Director",
+      name: "Dr. Elizabeth Mumbi, MBA",
+      role: "Medical Director | Founder",
       bio: "Board-certified addiction psychiatrist with 15 years of experience in substance abuse treatment.",
       image: "/api/placeholder/200/200",
     },
     {
-      name: "Michael Chen, LCSW",
-      role: "Clinical Director",
-      bio: "Licensed clinical social worker specializing in trauma-informed care and family therapy.",
+      name: "Parkes Owento, MA, CPsychol",
+      role: "Counselling Psychologist",
+      bio: "Licensed counselling psychologist specializing in addiction recovery, cognitive behavioral therapy, and mindfulness-based interventions for sustainable mental wellness.",
       image: "/api/placeholder/200/200",
     },
     {
-      name: "Dr. Emily Rodriguez",
+      name: "Dr. Waithera Pauline",
       role: "Clinical Psychologist",
       bio: "PhD in Clinical Psychology with expertise in cognitive-behavioral therapy and mindfulness.",
       image: "/api/placeholder/200/200",
     },
     {
-      name: "Robert Williams, RN",
+      name: "Allan Okoth, RN",
       role: "Head Nurse",
       bio: "Registered nurse with 12 years of experience in medical detox and patient care management.",
       image: "/api/placeholder/200/200",
@@ -324,10 +324,10 @@ export function About() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="tel:5551234357"
+              href="tel:+254722970951"
               className="bg-white text-blue-600 hover:bg-blue-50 font-semibold py-4 px-8 rounded-lg text-lg transition-colors duration-200"
             >
-              Call Now: (555) 123-HELP
+              Call Now: (+254) 722 970 951-HELP
             </a>
             <a
               href="#contact"

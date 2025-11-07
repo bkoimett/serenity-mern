@@ -119,7 +119,7 @@ export function Footer() {
                   <Phone className="w-4 h-4 text-blue-300" />
                 </div>
                 <span className="text-blue-200 group-hover:text-white transition-colors">
-                  +254722970951
+                  +254722 970951
                 </span>
               </div>
               <div className="flex items-center group">
