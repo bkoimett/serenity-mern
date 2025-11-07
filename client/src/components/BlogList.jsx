@@ -3,6 +3,11 @@ import { useState, useEffect } from "react";
 import { BlogCard } from "./BlogCard";
 import { BlogCardSkeleton } from "./BlogCardSkeleton";
 import { Search, Filter, Laptop } from "lucide-react";
+import {
+  ScrollAnimation,
+  QuickStaggerAnimation,
+  StaggerItem,
+} from "../components/animations/ScrollAnimation";
 
 export function BlogList() {
   const [blogs, setBlogs] = useState([]);
@@ -83,18 +88,25 @@ export function BlogList() {
   }
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="min-h-screen bg-gray-50">
+      <section className="bg-gradient-to-br from-blue-600 to-teal-600 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <ScrollAnimation yOffset={30} duration={0.6}>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Recovery Insights
+            </h1>
+          </ScrollAnimation>
+
+          <ScrollAnimation delay={0.1} yOffset={20} duration={0.6}>
+            <p className="text-xl opacity-90 max-w-2xl mx-auto">
+              Expert advice, personal stories, and guidance for your recovery
+              journey.
+            </p>
+          </ScrollAnimation>
+        </div>
+      </section>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Recovery Insights
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Expert advice, personal stories, and guidance for your recovery
-            journey.
-          </p>
-        </div>
 
         {/* Data Source Indicator */}
         {usingLocalData && (
@@ -125,40 +137,42 @@ export function BlogList() {
         )}
 
         {/* Blog Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {loading ? (
-            // Show 6 skeleton cards while loading
-            Array.from({ length: 6 }).map((_, index) => (
-              <BlogCardSkeleton key={index} />
-            ))
-          ) : filteredBlogs.length > 0 ? (
-            filteredBlogs.map((blog) => (
-              <BlogCard key={blog._id || blog.id} blog={blog} />
-            ))
-          ) : (
-            <div className="col-span-full text-center py-12">
-              <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Filter className="w-8 h-8 text-gray-400" />
+        <ScrollAnimation delay={0.2} yOffset={20}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {loading ? (
+              // Show 6 skeleton cards while loading
+              Array.from({ length: 6 }).map((_, index) => (
+                <BlogCardSkeleton key={index} />
+              ))
+            ) : filteredBlogs.length > 0 ? (
+              filteredBlogs.map((blog) => (
+                <BlogCard key={blog._id || blog.id} blog={blog} />
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Filter className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  {searchTerm ? "No articles found" : "No blog posts yet"}
+                </h3>
+                <p className="text-gray-600">
+                  {searchTerm
+                    ? "Try adjusting your search terms"
+                    : "Check back later for new content."}
+                </p>
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm("")}
+                    className="mt-4 text-blue-600 hover:text-blue-700 font-semibold transition-colors"
+                  >
+                    Clear search
+                  </button>
+                )}
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                {searchTerm ? "No articles found" : "No blog posts yet"}
-              </h3>
-              <p className="text-gray-600">
-                {searchTerm
-                  ? "Try adjusting your search terms"
-                  : "Check back later for new content."}
-              </p>
-              {searchTerm && (
-                <button
-                  onClick={() => setSearchTerm("")}
-                  className="mt-4 text-blue-600 hover:text-blue-700 font-semibold transition-colors"
-                >
-                  Clear search
-                </button>
-              )}
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        </ScrollAnimation>
       </div>
     </section>
   );
