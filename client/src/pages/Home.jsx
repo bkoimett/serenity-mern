@@ -11,8 +11,8 @@ export function Home() {
       <Hero />
       <Services />
       <BlogPreview />
+      <FeaturedGallery />
       <ContactForm />
-      <FeaturedGallery/>
     </>
   );
 }
