@@ -1,4 +1,4 @@
-// server/models/Contact.js
+// server/models/Contact.js - FINAL VERSION
 import mongoose from "mongoose";
 
 const contactSchema = new mongoose.Schema(

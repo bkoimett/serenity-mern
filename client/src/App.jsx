@@ -13,6 +13,7 @@ import { AdminLayout } from "./components/admin/AdminLayout";
 import { UserRegistration } from "./pages/admin/UserRegistration";
 import { ProtectedRoute } from "./components/admin/ProtectedRoute";
 import { GalleryManager } from "./pages/admin/GalleryManager.jsx";
+import { ContactManager } from "./pages/admin/ContactManager.jsx"; // ADDED IMPORT
 import { Layout } from "./components/Layout";
 
 function App() {
@@ -85,10 +86,11 @@ function App() {
             <Route
               path="contacts"
               element={
-                <ProtectedRoute adminOnly={true}>
+                <ProtectedRoute adminOnly={false}>
                   {" "}
                   {/* EXPLICIT: admin only */}
-                  <div className="p-6">Contacts Manager - Coming Soon</div>
+                  <ContactManager />{" "}
+                  {/* UPDATED: Now uses ContactManager component */}
                 </ProtectedRoute>
               }
             />

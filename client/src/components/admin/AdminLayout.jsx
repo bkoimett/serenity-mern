@@ -21,23 +21,24 @@ export function AdminLayout() {
   const { user, logout, isAdmin } = useAuth();
   const location = useLocation();
 
+  // src/components/admin/AdminLayout.jsx - UPDATE NAVIGATION ARRAY
   const navigation = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard, access: "all" },
     { name: "Blog Posts", href: "/admin/blog", icon: FileText, access: "all" },
-    { name: "Gallery", href: "/admin/gallery", icon: Image, access: "all" }, // CHANGED: ImageIcon to Image
+    { name: "Gallery", href: "/admin/gallery", icon: Image, access: "all" },
     { name: "Users", href: "/admin/users", icon: Users, access: "all" },
     {
       name: "Contacts",
       href: "/admin/contacts",
       icon: MessageSquare,
-      access: "admin",
-    },
+      access: "all",
+    }, // CHANGED: staff can access
     {
       name: "Settings",
       href: "/admin/settings",
       icon: Settings,
       access: "admin",
-    },
+    }, // Keep this admin only
   ];
 
   const handleLogout = () => {

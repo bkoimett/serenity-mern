@@ -1,8 +1,8 @@
-// server/routes/contact.js
+// server/routes/contact.js - UPDATE ALL AUTH MIDDLEWARE
 import express from "express";
 import { body, validationResult } from "express-validator";
 import Contact from "../models/Contact.js";
-import { auth, adminAuth } from "../middleware/auth.js";
+import { auth, staffAuth } from "../middleware/auth.js"; // Make sure staffAuth is imported
 
 const router = express.Router();
 
@@ -18,45 +18,15 @@ router.post(
     body("message", "Message is required").not().isEmpty().trim(),
   ],
   async (req, res) => {
-    try {
-      console.log("Contact form submission received");
-
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        console.log("Validation errors:", errors.array());
-        return res.status(400).json({ errors: errors.array() });
-      }
-
-      const { name, email, phone, message, inquiryType } = req.body;
-
-      // Create contact entry
-      const contact = new Contact({
-        name,
-        email,
-        phone,
-        message,
-        inquiryType: inquiryType || "general",
-      });
-
-      await contact.save();
-
-      console.log("Contact form saved successfully:", contact._id);
-
-      res.status(201).json({
-        message: "Thank you for your message. We'll get back to you soon!",
-        contactId: contact._id,
-      });
-    } catch (error) {
-      console.error("Contact form error:", error);
-      res.status(500).json({ message: "Server error. Please try again." });
-    }
+    // ... existing code
   }
 );
 
 // @route   GET /api/contact
-// @desc    Get all contact submissions (admin only)
-// @access  Private (Admin)
-router.get("/", adminAuth, async (req, res) => {
+// @desc    Get all contact submissions (admin & staff)
+// @access  Private (Admin & Staff)
+router.get("/", staffAuth, async (req, res) => {
+  // CHANGED: adminAuth → staffAuth
   try {
     const { page = 1, limit = 10, status } = req.query;
 
@@ -85,9 +55,10 @@ router.get("/", adminAuth, async (req, res) => {
 });
 
 // @route   GET /api/contact/:id
-// @desc    Get single contact submission (admin only)
-// @access  Private (Admin)
-router.get("/:id", adminAuth, async (req, res) => {
+// @desc    Get single contact submission (admin & staff)
+// @access  Private (Admin & Staff)
+router.get("/:id", staffAuth, async (req, res) => {
+  // CHANGED: adminAuth → staffAuth
   try {
     const contact = await Contact.findById(req.params.id);
 
@@ -103,12 +74,12 @@ router.get("/:id", adminAuth, async (req, res) => {
 });
 
 // @route   PUT /api/contact/:id/status
-// @desc    Update contact status (admin only)
-// @access  Private (Admin)
+// @desc    Update contact status (admin & staff)
+// @access  Private (Admin & Staff)
 router.put(
   "/:id/status",
   [
-    adminAuth,
+    staffAuth, // CHANGED: adminAuth → staffAuth
     body("status", "Valid status is required").isIn([
       "new",
       "contacted",
@@ -146,9 +117,10 @@ router.put(
 );
 
 // @route   GET /api/contact/stats/summary
-// @desc    Get contact statistics (admin only)
-// @access  Private (Admin)
-router.get("/stats/summary", adminAuth, async (req, res) => {
+// @desc    Get contact statistics (admin & staff)
+// @access  Private (Admin & Staff)
+router.get("/stats/summary", staffAuth, async (req, res) => {
+  // CHANGED: adminAuth → staffAuth
   try {
     const total = await Contact.countDocuments();
     const newCount = await Contact.countDocuments({ status: "new" });
