@@ -126,8 +126,14 @@ export function ContactForm() {
                     <p className="text-gray-600">
                       Kahawa Sukari, Kiu River Road, 2nd South Avenue
                     </p>
-                    <p className="text-gray-600">Nairobi, Kenya</p>
-                    <p className="text-sm text-gray-500">Proudly Kenyan</p>
+                    <p className="text-sm text-green-500 flex items-center gap-2">
+                      Proudly Kenyan
+                      <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/4/49/Flag_of_Kenya.svg"
+                        alt="Kenyan Flag"
+                        className="w-5 h-5"
+                      />
+                    </p>
                   </div>
                 </div>
               </div>
