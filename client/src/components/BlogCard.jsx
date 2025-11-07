@@ -22,7 +22,7 @@ export function BlogCard({ blog }) {
         <div className="flex items-center text-sm text-gray-500 mb-3 space-x-4">
           <div className="flex items-center">
             <User className="w-4 h-4 mr-1" />
-            {blog.author.name}
+            {blog.author?.name || "Dr.Elizabeth Koimett"}
           </div>
           <div className="flex items-center">
             <Calendar className="w-4 h-4 mr-1" />
@@ -40,7 +40,7 @@ export function BlogCard({ blog }) {
 
         {/* Tags */}
         <div className="flex flex-wrap gap-2 mb-4">
-          {blog.tags.map((tag, index) => (
+          {blog.tags?.map((tag, index) => (
             <span
               key={index}
               className="inline-flex items-center text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full"
