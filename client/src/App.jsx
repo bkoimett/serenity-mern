@@ -4,6 +4,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { Home } from "./pages/Home";
 import { Blog } from "./pages/Blog";
 import { About } from "./pages/About";
+import { Gallery } from "./pages/Gallery.jsx";
 import { BlogPost } from "./components/BlogPost";
 import { AdminLogin } from "./pages/admin/AdminLogin";
 import { Dashboard } from "./pages/admin/Dashboard";
@@ -11,6 +12,7 @@ import { BlogManager } from "./pages/admin/BlogManager";
 import { AdminLayout } from "./components/admin/AdminLayout";
 import { UserRegistration } from "./pages/admin/UserRegistration";
 import { ProtectedRoute } from "./components/admin/ProtectedRoute";
+import { GalleryManager } from "./pages/admin/GalleryManager.jsx";
 import { Layout } from "./components/Layout";
 
 function App() {
@@ -51,6 +53,14 @@ function App() {
               </Layout>
             }
           />
+          <Route
+            path="/gallery"
+            element={
+              <Layout>
+                <Gallery />
+              </Layout>
+            }
+          />
 
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
@@ -69,6 +79,7 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="blog" element={<BlogManager />} />
             <Route path="users" element={<UserRegistration />} />
+            <Route path="gallery" element={<GalleryManager />} />
 
             {/* Admin-only routes */}
             <Route

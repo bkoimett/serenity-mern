@@ -1,4 +1,4 @@
-// src/components/admin/AdminLayout.jsx - UPDATE NAVIGATION
+// src/components/admin/AdminLayout.jsx - FIXED VERSION
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { Link, useLocation, Outlet } from "react-router-dom";
@@ -12,6 +12,7 @@ import {
   X,
   LogOut,
   ChevronDown,
+  Image, // ADD THIS IMPORT
 } from "lucide-react";
 
 export function AdminLayout() {
@@ -23,7 +24,8 @@ export function AdminLayout() {
   const navigation = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard, access: "all" },
     { name: "Blog Posts", href: "/admin/blog", icon: FileText, access: "all" },
-    { name: "Users", href: "/admin/users", icon: Users, access: "all" }, // CHANGED: staff can view users
+    { name: "Gallery", href: "/admin/gallery", icon: Image, access: "all" }, // CHANGED: ImageIcon to Image
+    { name: "Users", href: "/admin/users", icon: Users, access: "all" },
     {
       name: "Contacts",
       href: "/admin/contacts",

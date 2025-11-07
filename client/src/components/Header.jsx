@@ -12,6 +12,7 @@ export function Header() {
     { name: "Home", href: "/" },
     { name: "About", href: "/about" },
     { name: "Blog", href: "/blog" },
+    { name: "Gallery", href: "/gallery" }, // ADDED GALLERY LINK
     { name: "Contact", href: "/#contact" },
   ];
 
