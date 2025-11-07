@@ -74,7 +74,7 @@ export function Gallery() {
       </section>
 
       {/* Gallery Content */}
-      <section className="py-12">
+      <section className="py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Filters and Search */}
           <ScrollAnimation delay={0.2} yOffset={20}>
