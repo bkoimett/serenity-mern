@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { body, validationResult } from "express-validator";
 import User from "../models/User.js";
-import auth from "../middleware/auth.js";
+import { auth, adminAuth } from "../middleware/auth.js"; // Import both middlewares
 
 const router = express.Router();
 
@@ -14,7 +14,7 @@ const router = express.Router();
 router.post(
   "/register",
   [
-    auth,
+    adminAuth, // Use adminAuth instead of auth + manual role check
     body("name", "Name is required").not().isEmpty(),
     body("email", "Please include a valid email").isEmail(),
     body("password", "Password must be at least 6 characters").isLength({
@@ -23,13 +23,6 @@ router.post(
   ],
   async (req, res) => {
     try {
-      // Check if user is admin
-      if (req.user.role !== "admin") {
-        return res
-          .status(403)
-          .json({ message: "Access denied. Admin rights required." });
-      }
-
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -242,5 +235,44 @@ router.put(
     }
   }
 );
+
+// @route   GET /api/auth/users
+// @desc    Get all users (admin only)
+// @access  Private (Admin)
+router.get("/users", adminAuth, async (req, res) => {
+  try {
+    const users = await User.find().select("-password").sort({ createdAt: -1 });
+    res.json(users);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// @route   DELETE /api/auth/users/:id
+// @desc    Delete user (admin only)
+// @access  Private (Admin)
+router.delete("/users/:id", adminAuth, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Prevent self-deletion
+    if (user._id.toString() === req.user.id) {
+      return res
+        .status(400)
+        .json({ message: "Cannot delete your own account" });
+    }
+
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 export default router;

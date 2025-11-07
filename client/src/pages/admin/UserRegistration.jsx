@@ -9,6 +9,7 @@ import {
   Shield,
   Database,
   Laptop,
+  RefreshCw,
 } from "lucide-react";
 
 export function UserRegistration() {
@@ -27,43 +28,36 @@ export function UserRegistration() {
 
   const API_BASE = "http://localhost:5000/api";
 
-  // Check if we're using a real JWT token
-  const isUsingRealToken = () => {
-    const token = localStorage.getItem("token");
-    return token && !token.startsWith("mock-jwt-token-");
-  };
-
-  // Fetch users from real backend
+  // Fetch users from backend
   useEffect(() => {
     fetchUsers();
   }, []);
 
   const fetchUsers = async () => {
     try {
+      setLoading(true);
       const token = localStorage.getItem("token");
 
       if (!token) {
-        throw new Error("No token available");
-      }
-
-      // If using mock token, skip backend and use local data
-      if (!isUsingRealToken()) {
-        console.log("Using mock token, loading local users");
-        loadLocalUsers();
-        return;
+        throw new Error("No authentication token");
       }
 
       console.log("Fetching users from backend...");
+      const response = await fetch(`${API_BASE}/auth/users`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      // Since we don't have a /api/users endpoint, we'll use what we have
-      // For now, we'll store users locally but indicate they're "database connected"
-      setUsingLocalData(false);
-      setMessage({ type: "success", text: "Connected to database" });
-
-      // In a real app, you'd have a users endpoint like:
-      // const response = await fetch(`${API_BASE}/users`, {
-      //   headers: { 'Authorization': `Bearer ${token}` }
-      // })
+      if (response.ok) {
+        const usersData = await response.json();
+        setUsers(usersData);
+        setUsingLocalData(false);
+        setMessage({ type: "success", text: "Connected to database" });
+        console.log("✅ Loaded users from MongoDB");
+      } else {
+        throw new Error("Failed to fetch users from backend");
+      }
     } catch (error) {
       console.log("Backend unavailable, using local data:", error.message);
       setUsingLocalData(true);
@@ -123,43 +117,38 @@ export function UserRegistration() {
     try {
       const token = localStorage.getItem("token");
 
-      // If using real token, try to save to backend
-      if (isUsingRealToken()) {
-        const response = await fetch(`${API_BASE}/auth/register`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            name: formData.name,
-            email: formData.email,
-            password: formData.password,
-            role: formData.role,
-          }),
+      // Try to save to backend first
+      const response = await fetch(`${API_BASE}/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          role: formData.role,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Refresh the users list from backend
+        await fetchUsers();
+        setMessage({
+          type: "success",
+          text: `User ${formData.name} registered successfully in database!`,
         });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          // Refresh the users list
-          await fetchUsers();
-          setMessage({
-            type: "success",
-            text: `User ${formData.name} registered successfully in database!`,
-          });
-          resetForm();
-          return;
-        } else {
-          throw new Error(data.message || "Registration failed");
-        }
+        resetForm();
+      } else {
+        throw new Error(data.message || "Registration failed");
       }
-
-      throw new Error("Using local storage");
     } catch (error) {
       console.log("Saving user to local storage:", error.message);
 
-      // Save to local storage
+      // Save to local storage as fallback
       const newUser = {
         _id: Date.now().toString(),
         name: formData.name,
@@ -210,22 +199,36 @@ export function UserRegistration() {
         return;
       }
 
-      if (isUsingRealToken()) {
-        // In a real app, you'd have a delete endpoint like:
-        // const response = await fetch(`${API_BASE}/users/${userId}`, {
-        //   method: 'DELETE',
-        //   headers: { 'Authorization': `Bearer ${token}` }
-        // })
-        throw new Error("User deletion endpoint not available");
-      }
+      // Try to delete from backend
+      const response = await fetch(`${API_BASE}/auth/users/${userId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      throw new Error("Using local storage");
+      if (response.ok) {
+        // Refresh from backend
+        await fetchUsers();
+        setMessage({
+          type: "success",
+          text: "User deleted successfully from database!",
+        });
+      } else {
+        const data = await response.json();
+        throw new Error(data.message || "Delete failed");
+      }
     } catch (error) {
-      // Delete from local storage
+      console.log("Deleting user from local storage:", error.message);
+
+      // Delete from local storage as fallback
       const updatedUsers = users.filter((user) => user._id !== userId);
       setUsers(updatedUsers);
       saveToLocalStorage(updatedUsers);
-      setMessage({ type: "success", text: "User deleted successfully!" });
+      setMessage({
+        type: "success",
+        text: "User deleted successfully locally!",
+      });
       setUsingLocalData(true);
     }
   };
@@ -265,7 +268,10 @@ export function UserRegistration() {
   if (loading && users.length === 0) {
     return (
       <div className="p-6">
-        <div className="animate-pulse">Loading users...</div>
+        <div className="flex items-center justify-center">
+          <RefreshCw className="w-6 h-6 animate-spin mr-2" />
+          Loading users...
+        </div>
       </div>
     );
   }
@@ -280,13 +286,22 @@ export function UserRegistration() {
             {usingLocalData ? "Using local storage" : "Connected to database"}
           </p>
         </div>
-        <button
-          onClick={() => setShowForm(true)}
-          className="flex items-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
-        >
-          <UserPlus className="w-4 h-4 mr-2" />
-          Add User
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={fetchUsers}
+            className="flex items-center bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Refresh
+          </button>
+          <button
+            onClick={() => setShowForm(true)}
+            className="flex items-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+          >
+            <UserPlus className="w-4 h-4 mr-2" />
+            Add User
+          </button>
+        </div>
       </div>
 
       {/* Data Source Indicator */}
