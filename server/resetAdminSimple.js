@@ -1,0 +1,37 @@
+// server/resetAdminSimple.js
+import mongoose from "mongoose";
+import User from "./models/User.js";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const resetAdminSimple = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log("Connected to MongoDB");
+
+    // Delete only if exists, then create fresh
+    await User.findOneAndDelete({ email: "admin@serenityplace.org" });
+
+    // Create with simple password
+    const adminUser = new User({
+      name: "System Administrator",
+      email: "admin@serenityplace.org",
+      password: "admin123", // Let the pre-save middleware hash it
+      role: "admin",
+    });
+
+    await adminUser.save();
+    console.log("✅ New admin user created");
+    console.log("Email: admin@serenityplace.org");
+    console.log("Password: admin123");
+    console.log("User document:", adminUser);
+
+    process.exit(0);
+  } catch (error) {
+    console.error("Error:", error);
+    process.exit(1);
+  }
+};
+
+resetAdminSimple();
