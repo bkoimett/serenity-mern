@@ -1,6 +1,7 @@
 // src/pages/Gallery.jsx
 import { useState, useEffect } from "react";
 import { Filter, Search } from "lucide-react";
+import { GalleryCardSkeleton } from "../components/GalleryCardSkeleton";
 
 export function Gallery() {
   const [galleryItems, setGalleryItems] = useState([]);
@@ -50,16 +51,6 @@ export function Gallery() {
         item.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="animate-pulse text-center">Loading gallery...</div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -108,56 +99,72 @@ export function Gallery() {
             </div>
           </div>
 
-          {/* Gallery Grid */}
+          {/* Gallery Grid - UPDATED WITH SKELETONS */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredItems.map((item) => (
-              <div
-                key={item._id}
-                className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300"
-              >
-                <div className="aspect-w-16 aspect-h-9">
-                  <img
-                    src={item.image.secure_url}
-                    alt={item.title}
-                    className="w-full h-64 object-cover"
-                  />
+            {loading ? (
+              // Show 6 skeleton cards while loading
+              Array.from({ length: 6 }).map((_, index) => (
+                <GalleryCardSkeleton key={index} />
+              ))
+            ) : filteredItems.length > 0 ? (
+              filteredItems.map((item) => (
+                <div
+                  key={item._id}
+                  className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300"
+                >
+                  <div className="aspect-w-16 aspect-h-9">
+                    <img
+                      src={item.image.secure_url}
+                      alt={item.title}
+                      className="w-full h-64 object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+
+                  <div className="p-4">
+                    <h3 className="font-semibold text-gray-900 mb-2">
+                      {item.title}
+                    </h3>
+
+                    {item.description && (
+                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                        {item.description}
+                      </p>
+                    )}
+
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      {item.category}
+                    </span>
+                  </div>
                 </div>
-
-                <div className="p-4">
-                  <h3 className="font-semibold text-gray-900 mb-2">
-                    {item.title}
-                  </h3>
-
-                  {item.description && (
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                      {item.description}
-                    </p>
-                  )}
-
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    {item.category}
-                  </span>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Search className="w-8 h-8 text-gray-400" />
                 </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  No gallery items found
+                </h3>
+                <p className="text-gray-600">
+                  {searchTerm || selectedCategory !== "all"
+                    ? "Try adjusting your search or filters"
+                    : "No images have been added to the gallery yet"}
+                </p>
+                {(searchTerm || selectedCategory !== "all") && (
+                  <button
+                    onClick={() => {
+                      setSearchTerm("");
+                      setSelectedCategory("all");
+                    }}
+                    className="mt-4 text-blue-600 hover:text-blue-700 font-semibold transition-colors"
+                  >
+                    Clear all filters
+                  </button>
+                )}
               </div>
-            ))}
+            )}
           </div>
-
-          {/* Empty State */}
-          {filteredItems.length === 0 && (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Search className="w-8 h-8 text-gray-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No gallery items found
-              </h3>
-              <p className="text-gray-600">
-                {searchTerm || selectedCategory !== "all"
-                  ? "Try adjusting your search or filters"
-                  : "No images have been added to the gallery yet"}
-              </p>
-            </div>
-          )}
         </div>
       </section>
     </div>
