@@ -7,7 +7,7 @@ import authRoutes from "./routes/auth.js";
 import blogRoutes from "./routes/blog.js";
 import galleryRoutes from "./routes/gallery.js";
 import { createFirstAdmin } from "./config/createAdmin.js";
-// import contactRoutes from "./routes/contact.js";
+import contactRoutes from "./routes/contact.js";
 
 dotenv.config();
 
@@ -20,7 +20,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/blog", blogRoutes);
 app.use("/api/gallery", galleryRoutes);
-// app.use("/api/contact", contactRoutes);
+app.use("/api/contact", contactRoutes);
 
 // MongoDB connection
 mongoose
