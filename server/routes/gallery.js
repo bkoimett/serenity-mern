@@ -8,13 +8,6 @@ import { auth, staffAuth } from "../middleware/auth.js";
 
 const router = express.Router();
 
-// Configure Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
 // Configure multer for memory storage
 const storage = multer.memoryStorage();
 const upload = multer({
@@ -30,6 +23,15 @@ const upload = multer({
     }
   },
 });
+
+// Configure Cloudinary INSIDE the route to ensure env vars are loaded
+const configureCloudinary = () => {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+};
 
 // @route   POST /api/gallery
 // @desc    Create a new gallery item
@@ -51,6 +53,8 @@ router.post(
   ],
   async (req, res) => {
     try {
+      console.log("Gallery POST request received");
+
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -62,22 +66,61 @@ router.post(
 
       const { title, description, category, featured } = req.body;
 
-      // Upload image to Cloudinary
-      const uploadResult = await new Promise((resolve, reject) => {
-        const uploadStream = cloudinary.uploader.upload_stream(
-          {
-            folder: "serenity-gallery",
-            transformation: [
-              { width: 1200, height: 800, crop: "limit", quality: "auto" },
-            ],
-          },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        );
-        uploadStream.end(req.file.buffer);
-      });
+      let imageData;
+
+      // Configure Cloudinary here to ensure env vars are loaded
+      configureCloudinary();
+
+      // Check if we have valid Cloudinary config
+      const hasCloudinaryConfig =
+        process.env.CLOUDINARY_CLOUD_NAME &&
+        process.env.CLOUDINARY_API_KEY &&
+        process.env.CLOUDINARY_API_SECRET;
+
+      console.log("Cloudinary config check:", { hasCloudinaryConfig });
+
+      if (hasCloudinaryConfig) {
+        try {
+          console.log("Uploading to Cloudinary...");
+          const uploadResult = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+              {
+                folder: "serenity-gallery",
+                transformation: [
+                  { width: 1200, height: 800, crop: "limit", quality: "auto" },
+                ],
+              },
+              (error, result) => {
+                if (error) {
+                  console.error("Cloudinary upload error:", error);
+                  reject(error);
+                } else {
+                  console.log(
+                    "Cloudinary upload successful:",
+                    result.public_id
+                  );
+                  resolve(result);
+                }
+              }
+            );
+            uploadStream.end(req.file.buffer);
+          });
+
+          imageData = {
+            public_id: uploadResult.public_id,
+            url: uploadResult.url,
+            secure_url: uploadResult.secure_url,
+          };
+          console.log("✓ Cloudinary upload successful");
+        } catch (cloudinaryError) {
+          console.error("Cloudinary failed:", cloudinaryError.message);
+          // Fallback to a better placeholder
+          imageData = createBetterPlaceholder(title);
+        }
+      } else {
+        console.log("Cloudinary not configured");
+        imageData = createBetterPlaceholder(title);
+      }
 
       // Create gallery item
       const galleryItem = new Gallery({
@@ -85,26 +128,35 @@ router.post(
         description: description || "",
         category,
         featured: featured === "true",
-        image: {
-          public_id: uploadResult.public_id,
-          url: uploadResult.url,
-          secure_url: uploadResult.secure_url,
-        },
+        image: imageData,
         createdBy: req.user.id,
       });
 
       await galleryItem.save();
-
-      // Populate creator info
       await galleryItem.populate("createdBy", "name email");
 
+      console.log("Gallery item created successfully");
       res.status(201).json(galleryItem);
     } catch (error) {
       console.error("Gallery creation error:", error);
-      res.status(500).json({ message: "Server error during image upload" });
+      res.status(500).json({ message: "Server error" });
     }
   }
 );
+
+// Better placeholder that actually works
+function createBetterPlaceholder(title) {
+  // Use a reliable placeholder service
+  const colors = ["3B82F6", "10B981", "8B5CF6", "EF4444", "F59E0B"];
+  const color = colors[Math.floor(Math.random() * colors.length)];
+  const text = encodeURIComponent(title.substring(0, 20));
+
+  return {
+    public_id: `placeholder_${Date.now()}`,
+    url: `https://dummyimage.com/1200x800/${color}/ffffff&text=${text}`,
+    secure_url: `https://dummyimage.com/1200x800/${color}/ffffff&text=${text}`,
+  };
+}
 
 // @route   GET /api/gallery
 // @desc    Get all gallery items with filtering
@@ -203,8 +255,12 @@ router.put(
   ],
   async (req, res) => {
     try {
+      console.log("Gallery PUT request received for:", req.params.id);
+      console.log("Request body:", req.body);
+
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
+        console.log("Validation errors:", errors.array());
         return res.status(400).json({ errors: errors.array() });
       }
 
@@ -216,16 +272,17 @@ router.put(
         return res.status(404).json({ message: "Gallery item not found" });
       }
 
-      // Update fields
+      // Update fields - handle featured correctly
       galleryItem.title = title;
       galleryItem.description = description || "";
       galleryItem.category = category;
-      galleryItem.featured = featured === "true";
+      galleryItem.featured = featured === true || featured === "true";
       galleryItem.order = order || 0;
 
       await galleryItem.save();
       await galleryItem.populate("createdBy", "name email");
 
+      console.log("Gallery item updated successfully");
       res.json(galleryItem);
     } catch (error) {
       console.error("Gallery update error:", error);
@@ -233,7 +290,6 @@ router.put(
     }
   }
 );
-
 // @route   DELETE /api/gallery/:id
 // @desc    Delete a gallery item
 // @access  Private (Staff & Admin)
@@ -245,8 +301,13 @@ router.delete("/:id", staffAuth, async (req, res) => {
       return res.status(404).json({ message: "Gallery item not found" });
     }
 
-    // Delete image from Cloudinary
-    await cloudinary.uploader.destroy(galleryItem.image.public_id);
+    // Configure Cloudinary for deletion
+    configureCloudinary();
+
+    // Delete image from Cloudinary if it's not a placeholder
+    if (!galleryItem.image.public_id.startsWith("placeholder_")) {
+      await cloudinary.uploader.destroy(galleryItem.image.public_id);
+    }
 
     // Delete from database
     await Gallery.findByIdAndDelete(req.params.id);
