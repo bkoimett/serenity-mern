@@ -99,8 +99,8 @@ export function ContactForm() {
                     <h4 className="font-semibold text-gray-900">
                       Emergency Helpline
                     </h4>
-                    <p className="text-gray-600">(555) 123-HELP</p>
-                    <p className="text-sm text-gray-500">Available 24/7</p>
+                    <p className="text-gray-600"> +254722970951</p>
+                    <p className="text-sm text-green-500">Available 24/7</p>
                   </div>
                 </div>
 
@@ -110,8 +110,8 @@ export function ContactForm() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">Email Us</h4>
-                    <p className="text-gray-600">help@serenityplace.org</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-gray-600">help@theserenityplace.org</p>
+                    <p className="text-sm text-green-500">
                       Response within 24 hours
                     </p>
                   </div>
@@ -123,8 +123,11 @@ export function ContactForm() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">Visit Us</h4>
-                    <p className="text-gray-600">123 Recovery Lane</p>
-                    <p className="text-gray-600">Serenity, CA 90210</p>
+                    <p className="text-gray-600">
+                      Kahawa Sukari, Kiu River Road, 2nd South Avenue
+                    </p>
+                    <p className="text-gray-600">Nairobi, Kenya</p>
+                    <p className="text-sm text-gray-500">Proudly Kenyan</p>
                   </div>
                 </div>
               </div>
@@ -135,8 +138,8 @@ export function ContactForm() {
               <h4 className="font-bold text-red-800 mb-2">Emergency?</h4>
               <p className="text-red-700 text-sm">
                 If this is an urgent situation, please call us immediately at{" "}
-                <a href="tel:5551234357" className="font-semibold underline">
-                  (555) 123-HELP
+                <a href="tel:+254722970951" className="font-semibold underline">
+                  (+254) 722 970 951-HELP
                 </a>
                 . We're available 24/7 for immediate assistance.
               </p>

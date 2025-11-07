@@ -97,7 +97,7 @@ export function Services() {
             </p>
 
             <a
-              href="tel:+25551234357" // consider international format: tel:+<countrycode><number>
+              href="tel:+254722970951" // consider international format: tel:+<countrycode><number>
               aria-label="Call now for immediate help"
               className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200"
             >

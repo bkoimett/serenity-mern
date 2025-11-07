@@ -26,9 +26,9 @@ export function Footer() {
                 />
               </div>
               <div>
-                <span className="text-xl font-bold">Serenity Place</span>
+                <span className="text-xl font-bold">The Serenity Place</span>
                 <span className="block text-sm text-blue-300">
-                  Rehabilitation Center
+                  Rehabilitation Center Nairobi
                 </span>
               </div>
             </Link>
@@ -91,7 +91,7 @@ export function Footer() {
             <div className="space-y-3">
               <div className="flex items-center">
                 <Phone className="w-4 h-4 mr-3 text-blue-400" />
-                <span className="text-gray-300">(555) 123-HELP</span>
+                <span className="text-gray-300">+254722970951</span>
               </div>
               <div className="flex items-center">
                 <Mail className="w-4 h-4 mr-3 text-blue-400" />
@@ -100,7 +100,7 @@ export function Footer() {
               <div className="flex items-start">
                 <MapPin className="w-4 h-4 mr-3 mt-1 text-blue-400" />
                 <span className="text-gray-300">
-                  123 Recovery Lane, Serenity, CA 90210
+                  Kahawa Sukari, Kiu River Road, 2nd South Avenue
                 </span>
               </div>
             </div>
@@ -109,7 +109,10 @@ export function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
-          <p>© 2024 Serenity Place Rehab. All rights reserved.</p>
+          <p>
+            © 2024 The Serenity Place Rehabilitation Centre Nairobi. <br />
+            All rights reserved.
+          </p>
         </div>
       </div>
     </footer>

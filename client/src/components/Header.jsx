@@ -34,7 +34,7 @@ export function Header() {
                 The Serenity Place
               </span>
               <span className="block text-sm text-primary-600">
-                Rehabilitation Center
+                Rehabilitation Center Nairobi
               </span>
             </div>
           </Link>
@@ -59,11 +59,11 @@ export function Header() {
           {/* CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
             <a
-              href="tel:5551234357"
+              href="tel:+254722970951"
               className="flex items-center text-gray-600 hover:text-primary-600"
             >
               <Phone className="w-4 h-4 mr-2" />
-              (555) 123-HELP
+              (+254) 722 970 951-HELP
             </a>
             <Link to="/#contact" className="btn-primary">
               Get Help
@@ -99,11 +99,11 @@ export function Header() {
               ))}
               <div className="pt-4 border-t border-gray-200">
                 <a
-                  href="tel:5551234357"
+                  href="tel:+254722970951"
                   className="flex items-center px-3 py-2 text-gray-600"
                 >
                   <Phone className="w-4 h-4 mr-2" />
-                  (555) 123-HELP
+                  (+254) 722 970 951-HELP
                 </a>
               </div>
             </div>
