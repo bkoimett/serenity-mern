@@ -15,9 +15,11 @@
     "@tailwindplus/elements": "^1.0.18",
     "axios": "^1.13.1",
     "date-fns": "^4.1.0",
+    "framer-motion": "^12.23.24",
     "lucide-react": "^0.552.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-intersection-observer": "^10.0.0",
     "react-router-dom": "^7.9.5"
   },
   "devDependencies": {
