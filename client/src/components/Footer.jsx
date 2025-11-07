@@ -12,8 +12,15 @@ import logo from "/the-serenity-place-logo-2026.svg";
 
 export function Footer() {
   return (
-    <footer className="bg-gray-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <footer className="bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white relative overflow-hidden">
+      {/* Background Blobs */}
+      <div className="absolute inset-0">
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div className="md:col-span-2">
@@ -22,36 +29,38 @@ export function Footer() {
                 <img
                   src={logo}
                   alt="The Serenity Place Logo"
-                  className="h-12 object-contain" // Tailwind styles
+                  className="h-12 object-contain"
                 />
               </div>
               <div>
-                <span className="text-xl font-bold">The Serenity Place</span>
+                <span className="text-xl font-bold bg-gradient-to-r from-blue-200 to-cyan-200 bg-clip-text text-transparent">
+                  The Serenity Place
+                </span>
                 <span className="block text-sm text-blue-300">
                   Rehabilitation Center Nairobi
                 </span>
               </div>
             </Link>
-            <p className="text-gray-300 mb-4 max-w-md">
+            <p className="text-blue-100 mb-4 max-w-md leading-relaxed">
               Providing compassionate, professional addiction treatment in a
               tranquil environment. Your journey to recovery starts here.
             </p>
             <div className="flex space-x-4">
               <a
                 href="#"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-blue-200 hover:text-white transition-all duration-200 hover:scale-110 p-2 rounded-full bg-white/5 hover:bg-white/10"
               >
                 <Facebook className="w-5 h-5" />
               </a>
               <a
                 href="#"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-blue-200 hover:text-white transition-all duration-200 hover:scale-110 p-2 rounded-full bg-white/5 hover:bg-white/10"
               >
                 <Twitter className="w-5 h-5" />
               </a>
               <a
                 href="#"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-blue-200 hover:text-white transition-all duration-200 hover:scale-110 p-2 rounded-full bg-white/5 hover:bg-white/10"
               >
                 <Instagram className="w-5 h-5" />
               </a>
@@ -60,25 +69,39 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
+            <h3 className="text-lg font-semibold mb-4 text-white">
+              Quick Links
+            </h3>
+            <ul className="space-y-3">
               <li>
-                <Link to="/about" className="text-gray-300 hover:text-white">
+                <Link
+                  to="/about"
+                  className="text-blue-200 hover:text-white transition-colors duration-200 hover:translate-x-1 inline-block"
+                >
                   About Us
                 </Link>
               </li>
               <li>
-                <Link to="/blog" className="text-gray-300 hover:text-white">
+                <Link
+                  to="/blog"
+                  className="text-blue-200 hover:text-white transition-colors duration-200 hover:translate-x-1 inline-block"
+                >
                   Blog
                 </Link>
               </li>
               <li>
-                <a href="#services" className="text-gray-300 hover:text-white">
+                <a
+                  href="#services"
+                  className="text-blue-200 hover:text-white transition-colors duration-200 hover:translate-x-1 inline-block"
+                >
                   Services
                 </a>
               </li>
               <li>
-                <a href="#contact" className="text-gray-300 hover:text-white">
+                <a
+                  href="#contact"
+                  className="text-blue-200 hover:text-white transition-colors duration-200 hover:translate-x-1 inline-block"
+                >
                   Contact
                 </a>
               </li>
@@ -87,19 +110,31 @@ export function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
-            <div className="space-y-3">
-              <div className="flex items-center">
-                <Phone className="w-4 h-4 mr-3 text-blue-400" />
-                <span className="text-gray-300">+254722970951</span>
+            <h3 className="text-lg font-semibold mb-4 text-white">
+              Contact Us
+            </h3>
+            <div className="space-y-4">
+              <div className="flex items-center group">
+                <div className="p-2 bg-blue-500/20 rounded-lg mr-3 group-hover:bg-blue-500/30 transition-colors">
+                  <Phone className="w-4 h-4 text-blue-300" />
+                </div>
+                <span className="text-blue-200 group-hover:text-white transition-colors">
+                  +254722970951
+                </span>
               </div>
-              <div className="flex items-center">
-                <Mail className="w-4 h-4 mr-3 text-blue-400" />
-                <span className="text-gray-300">help@serenityplace.org</span>
+              <div className="flex items-center group">
+                <div className="p-2 bg-blue-500/20 rounded-lg mr-3 group-hover:bg-blue-500/30 transition-colors">
+                  <Mail className="w-4 h-4 text-blue-300" />
+                </div>
+                <span className="text-blue-200 group-hover:text-white transition-colors">
+                  help@serenityplace.org
+                </span>
               </div>
-              <div className="flex items-start">
-                <MapPin className="w-4 h-4 mr-3 mt-1 text-blue-400" />
-                <span className="text-gray-300">
+              <div className="flex items-start group">
+                <div className="p-2 bg-blue-500/20 rounded-lg mr-3 group-hover:bg-blue-500/30 transition-colors mt-1">
+                  <MapPin className="w-4 h-4 text-blue-300" />
+                </div>
+                <span className="text-blue-200 group-hover:text-white transition-colors leading-relaxed">
                   Kahawa Sukari, Kiu River Road, 2nd South Avenue
                 </span>
               </div>
@@ -108,8 +143,8 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
-          <p>
+        <div className="border-t border-blue-800/50 mt-8 pt-8 text-center">
+          <p className="text-blue-200 text-sm">
             © 2024 The Serenity Place Rehabilitation Centre Nairobi. <br />
             All rights reserved.
           </p>

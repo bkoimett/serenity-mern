@@ -1,31 +1,16 @@
-// src/components/Hero.jsx
+// src/components/Hero.jsx (Simpler version)
 import { Link } from "react-router-dom";
 import { ArrowRight, Phone } from "lucide-react";
 
 export function Hero() {
   return (
-    <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-teal-600 text-white overflow-hidden">
-      {/* Background Blobs with inline styles */}
-      <div
-        className="absolute -top-40 -right-40 w-80 h-80 bg-teal-400/20 rounded-full mix-blend-multiply filter blur-xl opacity-70"
-        style={{
-          animation: "blob 7s infinite",
-        }}
-      ></div>
-      <div
-        className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-400/20 rounded-full mix-blend-multiply filter blur-xl opacity-70"
-        style={{
-          animation: "blob 7s infinite 2s",
-        }}
-      ></div>
-      <div
-        className="absolute top-40 left-1/2 w-80 h-80 bg-indigo-400/20 rounded-full mix-blend-multiply filter blur-xl opacity-70"
-        style={{
-          animation: "blob 7s infinite 4s",
-        }}
-      ></div>
-
-      <div className="absolute inset-0 bg-black/20"></div>
+    <section className="relative bg-gradient-to-br from-slate-900 via-purple-900 to-blue-900 text-white overflow-hidden">
+      {/* Simple background elements */}
+      <div className="absolute inset-0">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
+      </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-40">
         {/* Announcement Banner */}
@@ -46,7 +31,9 @@ export function Hero() {
         <div className="text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
             Find Peace at
-            <span className="block text-blue-100">The Serenity Place</span>
+            <span className="block bg-gradient-to-r from-blue-200 via-cyan-200 to-purple-200 bg-clip-text text-transparent">
+              The Serenity Place
+            </span>
           </h1>
 
           <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto leading-relaxed">
@@ -58,7 +45,7 @@ export function Hero() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
             <Link
               to="#contact"
-              className="bg-white text-blue-600 hover:bg-blue-50 font-semibold py-4 px-8 rounded-lg text-lg transition-all duration-200 flex items-center shadow-lg hover:shadow-xl"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-4 px-8 rounded-lg text-lg transition-all duration-200 flex items-center shadow-lg hover:shadow-xl hover:scale-105"
             >
               Get Help Now
               <ArrowRight className="ml-2 w-5 h-5" />
@@ -66,48 +53,30 @@ export function Hero() {
 
             <a
               href="tel:+254722970951"
-              className="border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold py-4 px-8 rounded-lg text-lg transition-all duration-200 flex items-center shadow-lg hover:shadow-xl"
+              className="border-2 border-white/80 text-white hover:bg-white hover:text-blue-600 font-semibold py-4 px-8 rounded-lg text-lg transition-all duration-200 flex items-center shadow-lg hover:shadow-xl hover:scale-105 backdrop-blur-sm"
             >
               <Phone className="mr-2 w-5 h-5" />
-              (+254) 722 970 951-HELP
+              (+254) 722 970 951
             </a>
           </div>
 
           {/* Trust Indicators */}
-          <div className="grid grid-cols-3 md:grid-cols-3 gap-0 max-w-2xl mx-auto text-blue-100">
+          <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
             <div className="text-center">
-              <div className="text-2xl font-bold mb-2">24/7</div>
-              <div className="text-sm">Support Available</div>
+              <div className="text-2xl font-bold mb-2 text-white">24/7</div>
+              <div className="text-sm text-blue-200">Support Available</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold mb-2">100%</div>
-              <div className="text-sm">Confidential</div>
+              <div className="text-2xl font-bold mb-2 text-white">100%</div>
+              <div className="text-sm text-blue-200">Confidential</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold mb-2">10+</div>
-              <div className="text-sm">Years Experience</div>
+              <div className="text-2xl font-bold mb-2 text-white">10+</div>
+              <div className="text-sm text-blue-200">Years Experience</div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Add style tag for the animation */}
-      <style jsx>{`
-        @keyframes blob {
-          0% {
-            transform: translate(0px, 0px) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-          100% {
-            transform: translate(0px, 0px) scale(1);
-          }
-        }
-      `}</style>
     </section>
   );
 }
