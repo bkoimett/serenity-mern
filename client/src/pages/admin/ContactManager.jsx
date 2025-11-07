@@ -171,14 +171,6 @@ export function ContactManager() {
       contact.message.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (loading) {
-    return (
-      <div className="p-6">
-        <div className="animate-pulse">Loading contacts...</div>
-      </div>
-    );
-  }
-
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -194,7 +186,24 @@ export function ContactManager() {
       </div>
 
       {/* Stats Overview */}
-      {stats && (
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div
+              key={index}
+              className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 animate-pulse"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="w-20 h-4 bg-gray-300 rounded mb-2"></div>
+                  <div className="w-12 h-6 bg-gray-300 rounded"></div>
+                </div>
+                <div className="w-12 h-12 bg-gray-200 rounded-xl"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : stats ? (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between">
@@ -252,7 +261,7 @@ export function ContactManager() {
             </div>
           </div>
         </div>
-      )}
+      ) : null}
 
       {/* Message Alert */}
       {message && (
@@ -304,72 +313,97 @@ export function ContactManager() {
 
           {/* Contacts List */}
           <div className="space-y-4">
-            {filteredContacts.map((contact) => (
-              <div
-                key={contact._id}
-                className={`bg-white rounded-2xl shadow-sm border border-gray-200 p-6 cursor-pointer hover:shadow-md transition-shadow ${
-                  selectedContact?._id === contact._id
-                    ? "ring-2 ring-blue-500"
-                    : ""
-                }`}
-                onClick={() => fetchContactDetails(contact._id)}
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-teal-500 rounded-full flex items-center justify-center">
-                      <span className="text-white font-semibold text-sm">
-                        {contact.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")
-                          .toUpperCase()}
+            {loading ? (
+              Array.from({ length: 3 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 animate-pulse"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+                      <div>
+                        <div className="w-24 h-4 bg-gray-300 rounded mb-2"></div>
+                        <div className="w-32 h-3 bg-gray-200 rounded"></div>
+                      </div>
+                    </div>
+                    <div className="w-16 h-6 bg-gray-300 rounded-full"></div>
+                  </div>
+                  <div className="space-y-2 mb-3">
+                    <div className="w-full h-3 bg-gray-200 rounded"></div>
+                    <div className="w-2/3 h-3 bg-gray-200 rounded"></div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="w-20 h-4 bg-gray-200 rounded"></div>
+                    <div className="w-16 h-4 bg-gray-200 rounded"></div>
+                  </div>
+                </div>
+              ))
+            ) : filteredContacts.length > 0 ? (
+              filteredContacts.map((contact) => (
+                <div
+                  key={contact._id}
+                  className={`bg-white rounded-2xl shadow-sm border border-gray-200 p-6 cursor-pointer hover:shadow-md transition-shadow ${
+                    selectedContact?._id === contact._id
+                      ? "ring-2 ring-blue-500"
+                      : ""
+                  }`}
+                  onClick={() => fetchContactDetails(contact._id)}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-teal-500 rounded-full flex items-center justify-center">
+                        <span className="text-white font-semibold text-sm">
+                          {contact.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .toUpperCase()}
+                        </span>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">
+                          {contact.name}
+                        </h3>
+                        <p className="text-sm text-gray-600">{contact.email}</p>
+                      </div>
+                    </div>
+                    <div
+                      className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+                        contact.status
+                      )}`}
+                    >
+                      {getStatusIcon(contact.status)}
+                      <span className="ml-1 capitalize">{contact.status}</span>
+                    </div>
+                  </div>
+
+                  <p className="text-gray-700 mb-3 line-clamp-2">
+                    {contact.message}
+                  </p>
+
+                  <div className="flex items-center justify-between text-sm text-gray-500">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center">
+                        <Phone className="w-4 h-4 mr-1" />
+                        {contact.phone}
+                      </div>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs ${
+                          inquiryTypeColors[contact.inquiryType]
+                        }`}
+                      >
+                        {contact.inquiryType}
                       </span>
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900">
-                        {contact.name}
-                      </h3>
-                      <p className="text-sm text-gray-600">{contact.email}</p>
-                    </div>
-                  </div>
-                  <div
-                    className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
-                      contact.status
-                    )}`}
-                  >
-                    {getStatusIcon(contact.status)}
-                    <span className="ml-1 capitalize">{contact.status}</span>
-                  </div>
-                </div>
-
-                <p className="text-gray-700 mb-3 line-clamp-2">
-                  {contact.message}
-                </p>
-
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  <div className="flex items-center space-x-4">
                     <div className="flex items-center">
-                      <Phone className="w-4 h-4 mr-1" />
-                      {contact.phone}
+                      <Calendar className="w-4 h-4 mr-1" />
+                      {format(new Date(contact.createdAt), "MMM dd, yyyy")}
                     </div>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        inquiryTypeColors[contact.inquiryType]
-                      }`}
-                    >
-                      {contact.inquiryType}
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <Calendar className="w-4 h-4 mr-1" />
-                    {format(new Date(contact.createdAt), "MMM dd, yyyy")}
                   </div>
                 </div>
-              </div>
-            ))}
-
-            {/* Empty State */}
-            {filteredContacts.length === 0 && (
+              ))
+            ) : (
               <div className="text-center py-12">
                 <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                   <Search className="w-8 h-8 text-gray-400" />
@@ -389,7 +423,47 @@ export function ContactManager() {
 
         {/* Contact Details Sidebar */}
         <div className="lg:col-span-1">
-          {selectedContact ? (
+          {loading ? (
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 animate-pulse">
+              <div className="flex items-center justify-between mb-6">
+                <div className="w-32 h-6 bg-gray-300 rounded"></div>
+                <div className="w-6 h-6 bg-gray-300 rounded"></div>
+              </div>
+              <div className="space-y-4 mb-6">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+                  <div>
+                    <div className="w-24 h-4 bg-gray-300 rounded mb-2"></div>
+                    <div className="w-32 h-3 bg-gray-200 rounded"></div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="w-20 h-4 bg-gray-200 rounded"></div>
+                  <div className="w-24 h-4 bg-gray-200 rounded"></div>
+                  <div className="w-16 h-6 bg-gray-300 rounded-full"></div>
+                </div>
+              </div>
+              <div className="mb-6">
+                <div className="w-16 h-4 bg-gray-300 rounded mb-2"></div>
+                <div className="bg-gray-200 rounded-lg p-4 space-y-2">
+                  <div className="w-full h-3 bg-gray-300 rounded"></div>
+                  <div className="w-4/5 h-3 bg-gray-300 rounded"></div>
+                  <div className="w-3/5 h-3 bg-gray-300 rounded"></div>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="w-24 h-4 bg-gray-300 rounded"></div>
+                <div className="flex flex-wrap gap-2">
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <div
+                      key={index}
+                      className="w-20 h-8 bg-gray-200 rounded-lg"
+                    ></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : selectedContact ? (
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sticky top-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-gray-900">

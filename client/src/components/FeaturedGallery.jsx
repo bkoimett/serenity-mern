@@ -83,6 +83,12 @@ export function FeaturedGallery() {
                       src={image.image.secure_url}
                       alt={image.title}
                       className="w-full h-96 object-cover"
+                      loading="lazy" // Add this
+                      onError={(e) => {
+                        e.target.src = `https://via.placeholder.com/1200x800/3B82F6/FFFFFF?text=${encodeURIComponent(
+                          image.title
+                        )}`;
+                      }}
                     />
                     <div className="absolute inset-0 bg-black bg-opacity-30 flex items-end">
                       <div className="p-6 text-white">
