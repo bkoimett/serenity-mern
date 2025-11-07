@@ -89,7 +89,7 @@ export function BlogList() {
 
   return (
     <section className="min-h-screen bg-gray-50">
-      <section className="bg-gradient-to-br from-blue-600 to-teal-600 text-white py-16">
+      <section className="bg-gradient-to-br from-blue-600 to-teal-600 text-white py-16 mb-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <ScrollAnimation yOffset={30} duration={0.6}>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -123,22 +123,24 @@ export function BlogList() {
         {/* Search Bar */}
         {!loading && blogs.length > 0 && (
           <div className="max-w-2xl mx-auto mb-12">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search articles by title, content, or tags..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-              />
-            </div>
+            <ScrollAnimation delay={0.2} yOffset={20}>
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search articles by title, content, or tags..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-12 pr-4 py-4 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                />
+              </div>
+            </ScrollAnimation>
           </div>
         )}
 
         {/* Blog Grid */}
         <ScrollAnimation delay={0.2} yOffset={20}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-4">
             {loading ? (
               // Show 6 skeleton cards while loading
               Array.from({ length: 6 }).map((_, index) => (
