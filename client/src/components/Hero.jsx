@@ -127,12 +127,12 @@ export function Hero() {
         />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-40">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-36">
         {/* Announcement Banner */}
         <ScrollAnimation yOffset={30} duration={0.8}>
           <div className="hidden sm:mb-8 sm:flex sm:justify-center">
             <motion.div
-              className="relative rounded-full px-3 py-1 text-sm/6 text-blue-100 ring-1 ring-white/20 hover:ring-white/30 transition-all duration-200 bg-white/10 backdrop-blur-sm cursor-pointer"
+              className="relative rounded-full px-3 py-1 text-sm/6 text-green-400 ring-1 ring-white/20 hover:ring-white/30 transition-all duration-200 bg-white/10 backdrop-blur-sm cursor-pointer"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -143,7 +143,7 @@ export function Hero() {
               >
                 <Sparkles className="w-4 h-4 text-cyan-300" />
               </motion.div>
-              Is Social Media to Blame for Addiction?.{" "}
+              Is Social Media to Blame for Increase in Addiction Cases?.{" "}
               <a
                 href="/blog"
                 className="font-semibold text-blue-200 hover:text-white transition-colors"
