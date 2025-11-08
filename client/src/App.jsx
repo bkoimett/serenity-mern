@@ -13,15 +13,17 @@ import { AdminLayout } from "./components/admin/AdminLayout";
 import { UserRegistration } from "./pages/admin/UserRegistration";
 import { ProtectedRoute } from "./components/admin/ProtectedRoute";
 import { GalleryManager } from "./pages/admin/GalleryManager.jsx";
-import { ContactManager } from "./pages/admin/ContactManager.jsx"; // ADDED IMPORT
+import { ContactManager } from "./pages/admin/ContactManager.jsx";
 import { Layout } from "./components/Layout";
+import GoogleAnalytics from "./components/analytics/GoogleAnalytics"; // ✅ ADD THIS LINE
 
 function App() {
   return (
     <AuthProvider>
       <Router>
+        <GoogleAnalytics /> {/* ✅ ADD THIS LINE */}
         <Routes>
-          {/* Public Routes */}
+          {/* Your existing routes remain exactly the same */}
           <Route
             path="/"
             element={
@@ -65,14 +67,10 @@ function App() {
 
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
-
-          {/* Main Admin Layout - Accessible to both admin and staff */}
           <Route
             path="/admin"
             element={
               <ProtectedRoute adminOnly={false}>
-                {" "}
-                {/* EXPLICIT: staff can access */}
                 <AdminLayout />
               </ProtectedRoute>
             }
@@ -81,16 +79,11 @@ function App() {
             <Route path="blog" element={<BlogManager />} />
             <Route path="users" element={<UserRegistration />} />
             <Route path="gallery" element={<GalleryManager />} />
-
-            {/* Admin-only routes */}
             <Route
               path="contacts"
               element={
                 <ProtectedRoute adminOnly={false}>
-                  {" "}
-                  {/* EXPLICIT: admin only */}
-                  <ContactManager />{" "}
-                  {/* UPDATED: Now uses ContactManager component */}
+                  <ContactManager />
                 </ProtectedRoute>
               }
             />
@@ -98,8 +91,6 @@ function App() {
               path="messages"
               element={
                 <ProtectedRoute adminOnly={true}>
-                  {" "}
-                  {/* EXPLICIT: admin only */}
                   <div className="p-6">Messages Manager - Coming Soon</div>
                 </ProtectedRoute>
               }
@@ -108,8 +99,6 @@ function App() {
               path="settings"
               element={
                 <ProtectedRoute adminOnly={true}>
-                  {" "}
-                  {/* EXPLICIT: admin only */}
                   <div className="p-6">Settings - Coming Soon</div>
                 </ProtectedRoute>
               }
