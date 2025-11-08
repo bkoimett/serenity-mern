@@ -8,6 +8,7 @@ import {
   QuickStaggerAnimation,
   StaggerItem,
 } from "../components/animations/ScrollAnimation";
+import { API_BASE_URL } from "../config/api"; 
 
 export function BlogList() {
   const [blogs, setBlogs] = useState([]);
@@ -16,7 +17,7 @@ export function BlogList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [usingLocalData, setUsingLocalData] = useState(false);
 
-  const API_BASE = "http://localhost:5000/api";
+  const API_BASE = `${API_BASE_URL}/api`; 
 
   // Fetch published blogs from API
   useEffect(() => {

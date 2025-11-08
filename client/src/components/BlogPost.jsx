@@ -18,6 +18,7 @@ import {
   StaggerItem,
 } from "../components/animations/ScrollAnimation";
 import { BlogPostSkeleton } from "./BlogPostSkeleton"; // Add this import
+import { API_BASE_URL } from "../config/api"; 
 
 export function BlogPost() {
   const { id } = useParams();
@@ -28,7 +29,7 @@ export function BlogPost() {
   const [usingLocalData, setUsingLocalData] = useState(false);
   const [error, setError] = useState("");
 
-  const API_BASE = "http://localhost:5000/api";
+  const API_BASE = `${API_BASE_URL}/api`; 
 
   // Fetch single blog post from backend
   useEffect(() => {

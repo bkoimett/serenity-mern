@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Plus, Edit, Trash2, Search, Calendar, User } from "lucide-react";
 import { format } from "date-fns";
+import { API_BASE_URL } from "../../config/api"; 
 
 export function BlogManager() {
   const [blogs, setBlogs] = useState([]);
@@ -18,7 +19,7 @@ export function BlogManager() {
   });
   const [message, setMessage] = useState("");
 
-  const API_BASE = "http://localhost:5000/api";
+  const API_BASE = `${API_BASE_URL}/api`; 
 
   // Fetch blogs from real backend
   useEffect(() => {

@@ -14,6 +14,7 @@ import {
   X,
   Key,
 } from "lucide-react";
+import { API_BASE_URL } from "../../config/api"; 
 
 export function UserRegistration() {
   const [users, setUsers] = useState([]);
@@ -32,7 +33,7 @@ export function UserRegistration() {
   const [currentUser, setCurrentUser] = useState(null);
   const [showPasswordFields, setShowPasswordFields] = useState(false);
 
-  const API_BASE = "http://localhost:5000/api";
+  const API_BASE = `${API_BASE_URL}/api`;
 
   // Get current user from token
   useEffect(() => {

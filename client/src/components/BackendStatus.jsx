@@ -1,6 +1,7 @@
 // src/components/BackendStatus.jsx
 import { useState, useEffect } from "react";
 import { Server, Wifi, WifiOff } from "lucide-react";
+import { API_BASE_URL } from "../config/api"; 
 
 export function BackendStatus() {
   const [backendOnline, setBackendOnline] = useState(null);
@@ -11,7 +12,7 @@ export function BackendStatus() {
 
   const checkBackendStatus = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/auth/me", {
+      const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
         method: "GET",
         headers: {
           Authorization: `Bearer mock-token`,

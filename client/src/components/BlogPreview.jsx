@@ -3,13 +3,14 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { BlogCard } from "./BlogCard";
 import { ArrowRight, Database, Laptop } from "lucide-react";
+import { API_BASE_URL } from "../config/api"; 
 
 export function BlogPreview() {
   const [featuredBlogs, setFeaturedBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [usingLocalData, setUsingLocalData] = useState(false);
 
-  const API_BASE = "http://localhost:5000/api";
+  const API_BASE = `${API_BASE_URL}/api`; 
 
   // Fetch latest published blogs from backend
   useEffect(() => {

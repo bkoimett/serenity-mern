@@ -1,9 +1,10 @@
 // client/src/context/AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect } from "react";
+import { API_BASE_URL } from "../config/api"; 
 
 const AuthContext = createContext();
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = `${API_BASE_URL}/api`; 
 
 // Export useAuth as a named export
 export const useAuth = () => {

@@ -9,6 +9,7 @@ import {
   Star,
   Filter,
 } from "lucide-react";
+import { API_BASE_URL } from "../../config/api"; 
 
 export function GalleryManager() {
   const [galleryItems, setGalleryItems] = useState([]);
@@ -39,7 +40,7 @@ export function GalleryManager() {
     { value: "facilities", label: "Facilities" },
   ];
 
-  const API_BASE = "http://localhost:5000/api";
+  const API_BASE = `${API_BASE_URL}/api`; 
 
   useEffect(() => {
     fetchGalleryItems();

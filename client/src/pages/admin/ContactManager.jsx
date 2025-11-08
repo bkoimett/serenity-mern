@@ -14,6 +14,7 @@ import {
   Archive,
 } from "lucide-react";
 import { format } from "date-fns";
+import { API_BASE_URL } from "../../config/api"; 
 
 export function ContactManager() {
   const [contacts, setContacts] = useState([]);
@@ -39,7 +40,7 @@ export function ContactManager() {
     other: "bg-gray-100 text-gray-800",
   };
 
-  const API_BASE = "http://localhost:5000/api";
+  const API_BASE = `${API_BASE_URL}/api`; 
 
   useEffect(() => {
     fetchContacts();
