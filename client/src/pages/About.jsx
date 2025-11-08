@@ -98,7 +98,7 @@ export function About() {
         title="About Our Rehabilitation Center"
         description="Learn about Serenity Place's mission, values, and professional team. We provide compassionate addiction treatment in Nairobi, Kenya."
         keywords="about rehabilitation center, addiction treatment team, recovery mission Kenya, substance abuse professionals Nairobi"
-        ogImage="/images/about-image.jpg"
+        ogImage="https://collection.cloudinary.com/deci4v6zv/d6eeba09b5b973a82733c1b7d43654c4"
       />
       <div className="min-h-screen bg-white">
         {/* Hero Section */}

@@ -63,7 +63,7 @@ export function Gallery() {
         title="Our Rehabilitation Center Gallery"
         description="View photos of Serenity Place facilities, treatment areas, and recovery environment. See our modern rehabilitation center in Nairobi."
         keywords="rehabilitation center photos, treatment facility gallery, recovery center images Nairobi, Serenity Place facilities"
-        ogImage="/images/gallery-image.jpg"
+        ogImage="https://collection.cloudinary.com/deci4v6zv/d6eeba09b5b973a82733c1b7d43654c4"
       />
       <div className="min-h-screen bg-gray-50">
         {/* Hero Section */}

@@ -25,7 +25,7 @@ export function Home() {
         title="Premier Rehabilitation Center in Nairobi, Kenya"
         description="Serenity Place offers professional addiction treatment and rehabilitation services in Nairobi, Kenya. Get evidence-based care for alcohol and drug addiction. One of the top rehabs in Kenya."
         keywords="rehabs in Kenya, rehabs in Nairobi, addiction treatment Kenya, rehabilitation center Nairobi, drug rehab Kenya, alcohol treatment Nairobi, recovery center Kenya"
-        ogImage="/images/hero-image.jpg"
+        ogImage="https://collection.cloudinary.com/deci4v6zv/d6eeba09b5b973a82733c1b7d43654c4"
         structuredData={structuredData}
       />
       <OrganizationSchema />

@@ -72,7 +72,11 @@ export const useSEO = ({
 
     updateMetaTag("og:title", fullTitle);
     updateMetaTag("og:description", finalDescription);
-    updateMetaTag("og:image", ogImage || "/images/og-image.jpg");
+    updateMetaTag(
+      "og:image",
+      ogImage ||
+        "https://collection.cloudinary.com/deci4v6zv/d6eeba09b5b973a82733c1b7d43654c4"
+    );
     updateMetaTag("og:type", "website");
     updateMetaTag("og:url", finalCanonical);
     updateMetaTag("og:site_name", "Serenity Place");
