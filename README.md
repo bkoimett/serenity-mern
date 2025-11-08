@@ -37,7 +37,7 @@ bkoimett
 
 
 
-
+dv
 
 
 
@@ -50,22 +50,22 @@ src/components/BackendStatus.jsx - Probably checks backend status✅
 
 src/components/ContactForm.jsx - Likely submits contact forms
 
-src/components/BlogList.jsx - Probably fetches blog posts
+src/components/BlogList.jsx - Probably fetches blog posts✅
 
-src/components/BlogPost.jsx - Likely fetches individual blog posts
+src/components/BlogPost.jsx - Likely fetches individual blog posts✅
 
-src/components/BlogPreview.jsx - May fetch blog data
+src/components/BlogPreview.jsx - May fetch blog data✅
 
 Admin Pages:
 src/pages/admin/AdminLogin.jsx - Contains login API calls
 
-src/pages/admin/BlogManager.jsx - CRUD operations for blogs
+src/pages/admin/BlogManager.jsx - CRUD operations for blogs✅
 
-src/pages/admin/ContactManager.jsx - Manages contact submissions
+src/pages/admin/ContactManager.jsx - Manages contact submissions✅
 
-src/pages/admin/GalleryManager.jsx - Manages gallery items
+src/pages/admin/GalleryManager.jsx - Manages gallery items✅
 
-src/pages/admin/UserRegistration.jsx - User registration API calls
+src/pages/admin/UserRegistration.jsx - User registration API calls✅
 
 src/pages/admin/Dashboard.jsx - May fetch dashboard data
 

@@ -1,6 +1,7 @@
 // src/components/ContactForm.jsx - UPDATED VERSION
 import { useState } from "react";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { API_BASE_URL } from "../config/api";
 
 export function ContactForm() {
   const [formData, setFormData] = useState({
@@ -27,7 +28,7 @@ export function ContactForm() {
     setSubmitStatus(null);
 
     try {
-      const response = await fetch("http://localhost:5000/api/contact", {
+      const response = await fetch(`${API_BASE_URL}/api/contact`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

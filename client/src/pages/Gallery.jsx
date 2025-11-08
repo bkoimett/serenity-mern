@@ -34,8 +34,8 @@ export function Gallery() {
       setLoading(true);
       const url =
         selectedCategory === "all"
-          ? "http://localhost:5000/api/gallery"
-          : `http://localhost:5000/api/gallery?category=${selectedCategory}`;
+          ? `${API_BASE_URL}/api/gallery`
+          : `${API_BASE_URL}/api/gallery?category=${selectedCategory}`;
 
       const response = await fetch(url);
 

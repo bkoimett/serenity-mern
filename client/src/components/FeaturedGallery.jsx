@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { API_BASE_URL } from "../config/api";
 
 export function FeaturedGallery() {
   const [featuredImages, setFeaturedImages] = useState([]);
@@ -14,9 +15,7 @@ export function FeaturedGallery() {
 
   const fetchFeaturedImages = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/gallery/featured"
-      );
+      const response = await fetch(`${API_BASE_URL}/api/gallery/featured`);
       if (response.ok) {
         const data = await response.json();
         setFeaturedImages(data);
