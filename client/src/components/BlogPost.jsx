@@ -317,10 +317,10 @@ export function BlogPost() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
-                  href="tel:5551234357"
+                  href="tel:+254722970951"
                   className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200"
                 >
-                  Call Now: (555) 123-HELP
+                  Call Now: (+254) 722 970951
                 </a>
                 <Link
                   to="/#contact"
