@@ -55,7 +55,9 @@ export const ArticleSchema = ({ post }) => {
       "@type": "Article",
       headline: post.title,
       description: post.excerpt || post.content?.substring(0, 160) || "",
-      image: post.image || "/images/og-image.jpg",
+      image:
+        post.image ||
+        "https://collection.cloudinary.com/deci4v6zv/d6eeba09b5b973a82733c1b7d43654c4",
       datePublished: post.createdAt,
       dateModified: post.updatedAt || post.createdAt,
       author: {
