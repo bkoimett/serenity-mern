@@ -8,9 +8,17 @@ import {
   Phone,
   MapPin,
 } from "lucide-react";
+
 import logo from "/the-serenity-place-logo-2026.svg";
 
 export function Footer() {
+  // tiktok icon
+  const TikTokIcon = ({ className }) => (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z" />
+    </svg>
+  );
+
   return (
     <footer className="bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white relative overflow-hidden">
       {/* Background Blobs */}
@@ -47,22 +55,28 @@ export function Footer() {
             </p>
             <div className="flex space-x-4">
               <a
-                href="#"
+                href="https://www.facebook.com/theserenityplacerehab"
                 className="text-blue-200 hover:text-white transition-all duration-200 hover:scale-110 p-2 rounded-full bg-white/5 hover:bg-white/10"
               >
                 <Facebook className="w-5 h-5" />
               </a>
               <a
-                href="#"
+                href="https://x.com/_SerenityPlace_"
                 className="text-blue-200 hover:text-white transition-all duration-200 hover:scale-110 p-2 rounded-full bg-white/5 hover:bg-white/10"
               >
                 <Twitter className="w-5 h-5" />
               </a>
               <a
-                href="#"
+                href="https://www.instagram.com/theserenityplacerehab"
                 className="text-blue-200 hover:text-white transition-all duration-200 hover:scale-110 p-2 rounded-full bg-white/5 hover:bg-white/10"
               >
                 <Instagram className="w-5 h-5" />
+              </a>
+              <a
+                href="https://www.tiktok.com/@theserenityplace"
+                className="text-blue-200 hover:text-white transition-all duration-200 hover:scale-110 p-2 rounded-full bg-white/5 hover:bg-white/10"
+              >
+                <TikTokIcon className="w-5 h-5" />
               </a>
             </div>
           </div>
