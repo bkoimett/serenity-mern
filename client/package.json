@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build": "vite build && node src/utils/generateSitemap.js",
+    "generate-sitemap": "node src/utils/generateSitemap.js"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
@@ -33,6 +34,7 @@
     "eslint-plugin-react-refresh": "^0.4.22",
     "globals": "^16.4.0",
     "postcss": "^8.5.6",
+    "sitemap": "^9.0.0",
     "tailwindcss": "^3.4.18",
     "vite": "^7.1.7"
   }
