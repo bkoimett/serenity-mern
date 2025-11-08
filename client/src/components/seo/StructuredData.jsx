@@ -16,6 +16,12 @@ export const OrganizationSchema = () => {
         addressLocality: "Nairobi",
         addressCountry: "KE",
       },
+      sameAs: [
+        "https://www.facebook.com/theserenityplacerehab",
+        "https://www.instagram.com/theserenityplacerehab",
+        "https://x.com/_SerenityPlace_",
+        "https://www.tiktok.com/@theserenityplace",
+      ],
       geo: {
         "@type": "GeoCoordinates",
         latitude: "-1.1963609538261084",
