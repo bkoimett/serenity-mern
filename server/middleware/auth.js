@@ -1,4 +1,4 @@
-// server/middleware/auth.js - UPDATED VERSION
+// server/middleware/auth.js - FIXED VERSION
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
@@ -27,35 +27,53 @@ const auth = async (req, res, next) => {
 // Allow both admin and staff for basic access
 const staffAuth = async (req, res, next) => {
   try {
-    await auth(req, res, () => {});
+    // Call auth middleware properly
+    await new Promise((resolve, reject) => {
+      auth(req, res, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
 
     // Check if user has staff or admin role
     if (!["admin", "staff"].includes(req.user.role)) {
-      return res
-        .status(403)
-        .json({ message: "Access denied. Staff or admin rights required." });
+      return res.status(403).json({
+        message: "Access denied. Staff or admin rights required.",
+      });
     }
 
     next();
   } catch (error) {
-    res.status(401).json({ message: "Authentication failed" });
+    // Don't send response if already sent by auth middleware
+    if (!res.headersSent) {
+      res.status(401).json({ message: "Authentication failed" });
+    }
   }
 };
 
 // Only allow admin for sensitive operations
 const adminAuth = async (req, res, next) => {
   try {
-    await auth(req, res, () => {});
+    // Call auth middleware properly
+    await new Promise((resolve, reject) => {
+      auth(req, res, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
 
     if (req.user.role !== "admin") {
-      return res
-        .status(403)
-        .json({ message: "Access denied. Admin rights required." });
+      return res.status(403).json({
+        message: "Access denied. Admin rights required.",
+      });
     }
 
     next();
   } catch (error) {
-    res.status(401).json({ message: "Authentication failed" });
+    // Don't send response if already sent by auth middleware
+    if (!res.headersSent) {
+      res.status(401).json({ message: "Authentication failed" });
+    }
   }
 };
 

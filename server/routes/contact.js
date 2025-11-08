@@ -6,6 +6,7 @@ import { auth, staffAuth } from "../middleware/auth.js"; // Make sure staffAuth 
 
 const router = express.Router();
 
+
 // @route   POST /api/contact
 // @desc    Submit a contact form
 // @access  Public
@@ -18,7 +19,38 @@ router.post(
     body("message", "Message is required").not().isEmpty().trim(),
   ],
   async (req, res) => {
-    // ... existing code
+    try {
+      console.log("📨 Contact form submission received:", req.body);
+
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        console.log("Validation errors:", errors.array());
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const { name, email, phone, message, inquiryType } = req.body;
+
+      // Create contact entry
+      const contact = new Contact({
+        name,
+        email,
+        phone,
+        message,
+        inquiryType: inquiryType || "general",
+      });
+
+      await contact.save();
+
+      console.log("Contact form saved successfully:", contact._id);
+
+      res.status(201).json({
+        message: "Thank you for your message. We'll get back to you soon!",
+        contactId: contact._id,
+      });
+    } catch (error) {
+      console.error("Contact form error:", error);
+      res.status(500).json({ message: "Server error. Please try again." });
+    }
   }
 );
 
